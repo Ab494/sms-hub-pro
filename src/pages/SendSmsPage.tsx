@@ -25,7 +25,7 @@ export default function SendSmsPage() {
           <div className="rounded-xl border border-border bg-card p-6 shadow-card space-y-5">
             <div className="space-y-2">
               <Label>Phone Number</Label>
-              <Input placeholder="+1 234 567 8900" value={phone} onChange={e => setPhone(e.target.value)} />
+              <Input placeholder="+254 7XX XXX XXX" value={phone} onChange={e => setPhone(e.target.value)} />
             </div>
 
             <div className="space-y-2">
@@ -33,10 +33,7 @@ export default function SendSmsPage() {
               <Select>
                 <SelectTrigger><SelectValue placeholder="Select a group" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Contacts</SelectItem>
-                  <SelectItem value="customers">Customers</SelectItem>
-                  <SelectItem value="leads">Leads</SelectItem>
-                  <SelectItem value="vip">VIP Clients</SelectItem>
+                  <SelectItem value="none" disabled>No groups available</SelectItem>
                 </SelectContent>
               </Select>
             </div>

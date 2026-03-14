@@ -3,24 +3,10 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Plus, Upload, Search, Pencil, Trash2 } from "lucide-react";
-
-const contacts = [
-  { id: 1, name: "John Doe", phone: "+1 234 567 8901", group: "Customers" },
-  { id: 2, name: "Jane Smith", phone: "+1 234 567 8902", group: "VIP Clients" },
-  { id: 3, name: "Robert Brown", phone: "+1 234 567 8903", group: "Leads" },
-  { id: 4, name: "Emily Davis", phone: "+1 234 567 8904", group: "Customers" },
-  { id: 5, name: "Michael Wilson", phone: "+1 234 567 8905", group: "Leads" },
-  { id: 6, name: "Sarah Johnson", phone: "+1 234 567 8906", group: "VIP Clients" },
-];
+import { Plus, Upload, Search, Users } from "lucide-react";
 
 export default function ContactsPage() {
   const [search, setSearch] = useState("");
-  const filtered = contacts.filter(c =>
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
-    c.phone.includes(search)
-  );
 
   return (
     <div>
@@ -52,17 +38,14 @@ export default function ContactsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtered.map(c => (
-              <TableRow key={c.id}>
-                <TableCell className="font-medium">{c.name}</TableCell>
-                <TableCell className="text-muted-foreground">{c.phone}</TableCell>
-                <TableCell><Badge variant="secondary">{c.group}</Badge></TableCell>
-                <TableCell className="text-right space-x-1">
-                  <Button variant="ghost" size="icon" className="h-8 w-8"><Pencil className="h-3.5 w-3.5" /></Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            <TableRow>
+              <TableCell colSpan={4} className="h-32 text-center">
+                <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                  <Users className="h-8 w-8" />
+                  <p className="text-sm">No contacts yet. Add your first contact to get started.</p>
+                </div>
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
       </div>
