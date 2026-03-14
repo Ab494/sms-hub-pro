@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const menuItems = [
-  { label: "Dashboard", icon: LayoutDashboard, path: "/" },
+  { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
   { label: "Send SMS", icon: Send, path: "/send-sms" },
   { label: "SMS Campaigns", icon: Megaphone, path: "/campaigns" },
   { label: "Contacts", icon: Users, path: "/contacts" },
