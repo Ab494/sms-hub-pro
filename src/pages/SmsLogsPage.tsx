@@ -1,32 +1,11 @@
 import { PageHeader } from "@/components/PageHeader";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, FileText } from "lucide-react";
 import { useState } from "react";
-
-const logs = [
-  { id: 1, phone: "+1 234 567 8901", message: "Your order #1234 has been shipped.", status: "Delivered", time: "2026-03-14 09:23" },
-  { id: 2, phone: "+1 234 567 8902", message: "Don't miss our spring sale!", status: "Delivered", time: "2026-03-14 09:20" },
-  { id: 3, phone: "+1 234 567 8903", message: "Your OTP is 482910", status: "Sent", time: "2026-03-14 09:18" },
-  { id: 4, phone: "+1 234 567 8904", message: "Payment received. Thank you!", status: "Failed", time: "2026-03-14 09:15" },
-  { id: 5, phone: "+1 234 567 8905", message: "Your appointment is tomorrow at 3 PM", status: "Delivered", time: "2026-03-14 09:10" },
-  { id: 6, phone: "+1 234 567 8906", message: "Welcome to BulkSMS platform!", status: "Delivered", time: "2026-03-14 09:05" },
-  { id: 7, phone: "+1 234 567 8907", message: "Your subscription will expire soon", status: "Sent", time: "2026-03-14 09:00" },
-  { id: 8, phone: "+1 234 567 8908", message: "Flash sale starts now!", status: "Failed", time: "2026-03-14 08:55" },
-];
-
-const statusColor = (s: string) => {
-  if (s === "Delivered") return "default" as const;
-  if (s === "Sent") return "secondary" as const;
-  return "destructive" as const;
-};
 
 export default function SmsLogsPage() {
   const [search, setSearch] = useState("");
-  const filtered = logs.filter(l =>
-    l.phone.includes(search) || l.message.toLowerCase().includes(search.toLowerCase())
-  );
 
   return (
     <div>
@@ -49,14 +28,14 @@ export default function SmsLogsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtered.map(l => (
-              <TableRow key={l.id}>
-                <TableCell className="font-medium">{l.phone}</TableCell>
-                <TableCell className="hidden md:table-cell max-w-[250px] truncate text-muted-foreground text-sm">{l.message}</TableCell>
-                <TableCell><Badge variant={statusColor(l.status)}>{l.status}</Badge></TableCell>
-                <TableCell className="hidden sm:table-cell text-muted-foreground text-sm">{l.time}</TableCell>
-              </TableRow>
-            ))}
+            <TableRow>
+              <TableCell colSpan={4} className="h-32 text-center">
+                <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                  <FileText className="h-8 w-8" />
+                  <p className="text-sm">No SMS logs yet. Logs will appear here after sending messages.</p>
+                </div>
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
       </div>
