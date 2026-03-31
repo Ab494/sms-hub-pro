@@ -13,9 +13,13 @@ import {
   MessageSquare,
   ChevronLeft,
   Menu,
+  Shield,
+  CreditCard,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 const menuItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
@@ -28,6 +32,13 @@ const menuItems = [
   { label: "Settings", icon: Settings, path: "/settings" },
 ];
 
+const adminMenuItems = [
+  { label: "Admin Dashboard", icon: Shield, path: "/admin/dashboard" },
+  { label: "Companies", icon: Building2, path: "/admin/companies" },
+  { label: "Transactions", icon: CreditCard, path: "/admin/transactions" },
+  { label: "Platform Settings", icon: Settings, path: "/admin/settings" },
+];
+
 interface AppSidebarProps {
   collapsed: boolean;
   onToggle: () => void;
@@ -37,6 +48,11 @@ interface AppSidebarProps {
 
 export function AppSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: AppSidebarProps) {
   const location = useLocation();
+  const { user, logout } = useAuth();
+  const isAdmin = user?.role === 'admin';
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
+  const currentMenuItems = isAdminRoute ? adminMenuItems : menuItems;
 
   return (
     <>
@@ -67,7 +83,7 @@ export function AppSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: A
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto p-3 space-y-1">
-          {menuItems.map((item) => {
+          {currentMenuItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <Link
@@ -86,11 +102,39 @@ export function AppSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: A
               </Link>
             );
           })}
+          
+          {/* Switch to User/Admin View */}
+          {isAdmin && !isAdminRoute && (
+            <div className="pt-4 mt-4 border-t border-sidebar-border">
+              <Link
+                to="/admin/dashboard"
+                onClick={onMobileClose}
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-purple-600 hover:bg-purple-50 transition-colors"
+              >
+                <Shield className="h-4 w-4 shrink-0" />
+                {!collapsed && <span>Admin Panel</span>}
+              </Link>
+            </div>
+          )}
+          
+          {isAdmin && isAdminRoute && (
+            <div className="pt-4 mt-4 border-t border-sidebar-border">
+              <Link
+                to="/dashboard"
+                onClick={onMobileClose}
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors"
+              >
+                <LayoutDashboard className="h-4 w-4 shrink-0" />
+                {!collapsed && <span>User Dashboard</span>}
+              </Link>
+            </div>
+          )}
         </nav>
 
         {/* Footer */}
         <div className="border-t border-sidebar-border p-3">
           <button
+            onClick={logout}
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
           >
             <LogOut className="h-4 w-4 shrink-0" />

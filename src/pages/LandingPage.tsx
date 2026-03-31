@@ -1,14 +1,17 @@
-import { Link } from "react-router-dom";
-import { MessageSquare, Send, Users, BarChart3, Shield, Zap, ArrowRight, CheckCircle2, Menu, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { MessageSquare, Send, Users, BarChart3, ArrowRight, CheckCircle2, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import heroPerson1 from "@/assets/hero-person-1.png";
 import heroPerson2 from "@/assets/hero-person-2.png";
+import { useAuth } from "@/contexts/AuthContext";
 
 const services = [
   { label: "Bulk SMS", icon: Send, description: "Send thousands of messages instantly to your audience" },
   { label: "Contacts", icon: Users, description: "Manage and organize your contact lists effortlessly" },
-  { label: "Campaigns", icon: Zap, description: "Create targeted SMS campaigns that convert" },
+  { label: "Campaigns", icon: BarChart3, description: "Create targeted SMS campaigns that convert" },
   { label: "Analytics", icon: BarChart3, description: "Track delivery rates and campaign performance" },
 ];
 
@@ -23,12 +26,37 @@ const features = [
 
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const { login, register } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    try {
+      if (isLogin) {
+        await login(formData.email, formData.password);
+      } else {
+        await register(formData);
+      }
+      setShowAuthModal(false);
+      navigate("/dashboard");
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Authentication failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Top Bar */}
       <div className="bg-[hsl(174,72%,46%)] text-[hsl(0,0%,100%)] text-center text-sm py-2 px-4 font-medium">
-        Empowering Business Communication Across <span className="bg-[hsl(340,82%,52%)] text-[hsl(0,0%,100%)] px-2 py-0.5 rounded-full text-xs font-bold ml-1">AFRICA</span>
+        Empowering Business Communication Across <span className="bg-[hsl(340,82%,52%)] text-[hsl(0,0%,100%)] px-2 py-0.5 rounded-full text-xs font-bold ml-1">KENYA</span>
       </div>
 
       {/* Navbar */}
@@ -50,14 +78,12 @@ export default function LandingPage() {
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
-            <Link to="/dashboard">
-              <Button variant="ghost" size="sm">Login</Button>
-            </Link>
-            <Link to="/dashboard">
-              <Button size="sm" className="bg-[hsl(174,72%,46%)] hover:bg-[hsl(174,72%,40%)] text-[hsl(0,0%,100%)] rounded-full px-6">
-                Get Started Now
-              </Button>
-            </Link>
+            <Button variant="ghost" size="sm" onClick={() => { setIsLogin(true); setShowAuthModal(true); }}>
+              Login
+            </Button>
+            <Button size="sm" className="bg-[hsl(174,72%,46%)] hover:bg-[hsl(174,72%,40%)] text-[hsl(0,0%,100%)] rounded-full px-6" onClick={() => { setIsLogin(false); setShowAuthModal(true); }}>
+              Get Started Now
+            </Button>
           </div>
 
           <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -67,16 +93,14 @@ export default function LandingPage() {
 
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-border bg-card p-4 space-y-3">
-            {["Solutions", "Pricing", "Developer", "About", "Contact"].map((item) => (
+            {["Solutions", "Pricing", "Developer", "About", "Contact"].map((item) =>(
               <a key={item} href="#" className="block text-sm font-medium text-muted-foreground py-2">
                 {item}
               </a>
             ))}
-            <Link to="/dashboard">
-              <Button className="w-full bg-[hsl(174,72%,46%)] hover:bg-[hsl(174,72%,40%)] text-[hsl(0,0%,100%)] rounded-full">
-                Get Started Now
-              </Button>
-            </Link>
+            <Button className="w-full bg-[hsl(174,72%,46%)] hover:bg-[hsl(174,72%,40%)] text-[hsl(0,0%,100%)] rounded-full" onClick={() => { setIsLogin(false); setShowAuthModal(true); }}>
+              Get Started Now
+            </Button>
           </div>
         )}
       </header>
@@ -99,12 +123,10 @@ export default function LandingPage() {
                 Reach thousands of customers instantly with our powerful bulk SMS platform. Reliable, fast, and affordable.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Link to="/dashboard">
-                  <Button size="lg" className="bg-[hsl(340,82%,52%)] hover:bg-[hsl(340,82%,45%)] text-[hsl(0,0%,100%)] rounded-full px-8 text-base h-12">
-                    Get Started Now
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
+                <Button size="lg" className="bg-[hsl(340,82%,52%)] hover:bg-[hsl(340,82%,45%)] text-[hsl(0,0%,100%)] rounded-full px-8 text-base h-12" onClick={() => { setIsLogin(false); setShowAuthModal(true); }}>
+                  Get Started Now
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
                 <Button size="lg" variant="outline" className="rounded-full px-8 text-base h-12 border-[hsl(340,82%,52%)] text-[hsl(340,82%,52%)] hover:bg-[hsl(340,82%,52%)]/10">
                   Free Demo
                 </Button>
@@ -184,17 +206,17 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-              <Link to="/dashboard" className="inline-block mt-8">
-                <Button size="lg" className="bg-[hsl(174,72%,46%)] hover:bg-[hsl(174,72%,40%)] text-[hsl(0,0%,100%)] rounded-full px-8">
-                  Start Sending Now
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
+              <Button size="lg" className="bg-[hsl(174,72%,46%)] hover:bg-[hsl(174,72%,40%)] text-[hsl(0,0%,100%)] rounded-full px-8 mt-8" onClick={() => { setIsLogin(false); setShowAuthModal(true); }}>
+                Start Sending Now
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
             </div>
             <div className="relative">
               <div className="bg-card rounded-2xl border border-border shadow-xl p-8">
                 <div className="flex items-center gap-3 mb-6">
-                  <Shield className="h-8 w-8 text-[hsl(174,72%,46%)]" />
+                  <div className="h-8 w-8 rounded-lg bg-[hsl(174,72%,46%)]/10 flex items-center justify-center">
+                    <MessageSquare className="h-5 w-5 text-[hsl(174,72%,46%)]" />
+                  </div>
                   <div>
                     <div className="font-semibold text-foreground">Enterprise Grade</div>
                     <div className="text-sm text-muted-foreground">Secure & Reliable</div>
@@ -232,11 +254,9 @@ export default function LandingPage() {
             Join thousands of businesses using BulkSMS to communicate effectively.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/dashboard">
-              <Button size="lg" className="bg-[hsl(0,0%,100%)] text-[hsl(174,72%,46%)] hover:bg-[hsl(0,0%,95%)] rounded-full px-8 text-base h-12 font-semibold">
-                Get Started Free
-              </Button>
-            </Link>
+            <Button size="lg" className="bg-[hsl(0,0%,100%)] text-[hsl(174,72%,46%)] hover:bg-[hsl(0,0%,95%)] rounded-full px-8 text-base h-12 font-semibold" onClick={() => { setIsLogin(false); setShowAuthModal(true); }}>
+              Get Started Free
+            </Button>
             <Button size="lg" variant="outline" className="rounded-full px-8 text-base h-12 border-[hsl(0,0%,100%)] text-[hsl(0,0%,100%)] hover:bg-[hsl(0,0%,100%)]/10">
               Contact Sales
             </Button>
@@ -277,6 +297,73 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-card rounded-xl p-6 w-full max-w-md border border-border shadow-xl">
+            <h3 className="text-xl font-semibold mb-4 text-center">
+              {isLogin ? "Welcome Back" : "Create Account"}
+            </h3>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {!isLogin && (
+                <div>
+                  <Label>Full Name</Label>
+                  <Input 
+                    value={formData.name}
+                    onChange={e => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Enter your name"
+                    required={!isLogin}
+                    className="mt-1"
+                  />
+                </div>
+              )}
+              <div>
+                <Label>Email</Label>
+                <Input 
+                  type="email"
+                  value={formData.email}
+                  onChange={e => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="Enter your email"
+                  required
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Password</Label>
+                <Input 
+                  type="password"
+                  value={formData.password}
+                  onChange={e => setFormData({ ...formData, password: e.target.value })}
+                  placeholder="Enter your password"
+                  required
+                  className="mt-1"
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Please wait..." : isLogin ? "Login" : "Create Account"}
+              </Button>
+            </form>
+            <div className="mt-4 text-center text-sm">
+              {isLogin ? (
+                <p className="text-muted-foreground">
+                  Don't have an account?{" "}
+                  <button className="text-primary font-medium" onClick={() => setIsLogin(false)}>Sign up</button>
+                </p>
+              ) : (
+                <p className="text-muted-foreground">
+                  Already have an account?{" "}
+                  <button className="text-primary font-medium" onClick={() => setIsLogin(true)}>Login</button>
+                </p>
+              )}
+            </div>
+            <button className="absolute top-4 right-4" onClick={() => setShowAuthModal(false)}>
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
