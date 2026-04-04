@@ -320,20 +320,28 @@ app.post('/api/admin/update-sms-cost', async (req, res) => {
   }
 });
 
-// Serve static files in production
+// Serve static files in production (MUST come before 404 handler)
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../dist')));
-  
+
+  // Catch all handler: send back React's index.html file for client-side routing
   app.get('*', (req, res) => {
+    // Skip API routes
+    if (req.path.startsWith('/api/')) {
+      return res.status(404).json({
+        success: false,
+        message: 'API endpoint not found'
+      });
+    }
     res.sendFile(path.join(__dirname, '../dist/index.html'));
   });
 }
 
-// 404 handler
-app.use((req, res) => {
+// 404 handler for API routes only
+app.use('/api/*', (req, res) => {
   res.status(404).json({
     success: false,
-    message: 'Endpoint not found'
+    message: 'API endpoint not found'
   });
 });
 
