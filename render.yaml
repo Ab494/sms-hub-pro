@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: sms-hub-backend
+    runtime: node
+    buildCommand: |
+      npm install &&
+      cd .. &&
+      npm install &&
+      npm run build &&
+      cp -r dist backend/
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: CLIENT_URL
+        value: https://sms-hub-convex.onrender.com
+      - key: MONGODB_URI
+        value: mongodb+srv://cheruiyotevans646_db_user:Evans6042@cluster0.sd7of0h.mongodb.net/?appName=Cluster0
+      - key: JWT_SECRET
+        value: your-super-secret-jwt-key-change-this-in-production-make-it-very-long-and-random-123456789-make-it-at-least-64-characters-long-for-security
+      - key: BLESSEDTEXTS_API_KEY
+        value: 91a4ff20fbac44cd8c0e300a19cfba55
+      - key: BLESSEDTEXTS_SENDER
+        value: FERRITE
+      - key: DEFAULT_SENDER_ID
+        value: FERRITE
+      - key: SMS_COST_PER_UNIT
+        value: 0.46

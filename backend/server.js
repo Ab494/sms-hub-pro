@@ -322,7 +322,7 @@ app.post('/api/admin/update-sms-cost', async (req, res) => {
 
 // Serve static files in production (MUST come before 404 handler)
 if (process.env.NODE_ENV === 'production') {
-  const distPath = path.join(__dirname, '../dist');
+  const distPath = path.join(__dirname, 'dist');
   console.log('Serving static files from:', distPath);
 
   app.use(express.static(distPath));
@@ -344,13 +344,14 @@ if (process.env.NODE_ENV === 'production') {
     console.log('Serving index.html from:', indexPath);
 
     // Check if file exists before sending
-    if (require('fs').existsSync(indexPath)) {
+    const fs = require('fs');
+    if (fs.existsSync(indexPath)) {
       res.sendFile(indexPath);
     } else {
       console.log('index.html not found at:', indexPath);
       res.status(404).json({
         success: false,
-        message: 'React app not built'
+        message: 'React app not built. Please check deployment configuration.'
       });
     }
   });
