@@ -219,7 +219,7 @@ export default function DashboardPage() {
                 className="mt-1.5 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
               />
               <p className="text-xs text-green-600 mt-1">
-                Ksh. {topupAmount || 0} @ 0.35 = {Math.floor(Number(topupAmount) / 0.35) || 0} units
+                Ksh. {topupAmount || 0} @ 0.46 = {Math.floor(Number(topupAmount) / 0.46) || 0} SMS units
               </p>
             </div>
             <div>

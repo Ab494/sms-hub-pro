@@ -225,8 +225,9 @@ export default function SendSmsPage() {
               </p>
               <p className="text-sm whitespace-pre-wrap">{message || "Your message will appear here..."}</p>
             </div>
-            <div className="mt-4 text-xs text-muted-foreground">
-              <p>Estimated cost: {smsCount * (sendingMode === "single" ? 1 : (phone.split(/[\n,]/).filter(Boolean).length || 1))} units</p>
+            <div className="mt-4 space-y-1 text-xs text-muted-foreground">
+              <p>Rate: Kshs 0.46 per SMS</p>
+              <p>Estimated cost: Kshs {(smsCount * (sendingMode === "single" ? 1 : (phone.split(/[\n,]/).filter(Boolean).length || 1)) * 0.46).toFixed(2)}</p>
             </div>
           </div>
         </div>
