@@ -66,7 +66,7 @@ export default function LandingPage() {
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[hsl(174,72%,46%)]">
               <MessageSquare className="h-5 w-5 text-[hsl(0,0%,100%)]" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-foreground">BulkSMS</span>
+            <span className="text-xl font-bold tracking-tight text-foreground">TumaPrime SMS</span>
           </div>
 
           <nav className="hidden md:flex items-center gap-8">
@@ -193,7 +193,7 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-                Why Choose <span className="text-[hsl(174,72%,46%)]">BulkSMS</span>?
+                Why Choose <span className="text-[hsl(174,72%,46%)]">TumaPrime SMS</span>?
               </h2>
               <p className="text-muted-foreground mb-8">
                 Built for businesses that need reliable, scalable messaging infrastructure.
@@ -251,7 +251,7 @@ export default function LandingPage() {
             Ready to reach your audience?
           </h2>
           <p className="text-[hsl(0,0%,100%)]/80 mb-8 text-lg">
-            Join thousands of businesses using BulkSMS to communicate effectively.
+            Join thousands of businesses using TumaPrime SMS to communicate effectively.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button size="lg" className="bg-[hsl(0,0%,100%)] text-[hsl(174,72%,46%)] hover:bg-[hsl(0,0%,95%)] rounded-full px-8 text-base h-12 font-semibold" onClick={() => { setIsLogin(false); setShowAuthModal(true); }}>
@@ -273,9 +273,9 @@ export default function LandingPage() {
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[hsl(174,72%,46%)]">
                   <MessageSquare className="h-4 w-4 text-[hsl(0,0%,100%)]" />
                 </div>
-                <span className="text-lg font-bold text-foreground">BulkSMS</span>
+                <span className="text-lg font-bold text-foreground">TumaPrime SMS</span>
               </div>
-              <p className="text-sm text-muted-foreground">Empowering business communication across Africa and beyond.</p>
+              <p className="text-sm text-muted-foreground">Powered by 254 Convex Communication LTD</p>
             </div>
             {[
               { title: "Product", links: ["Bulk SMS", "Campaigns", "Analytics", "API"] },
@@ -293,7 +293,7 @@ export default function LandingPage() {
             ))}
           </div>
           <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground">
-            © 2026 BulkSMS. All rights reserved.
+            © 2026 TumaPrime SMS. Powered by 254 Convex Communication LTD. All rights reserved.
           </div>
         </div>
       </footer>
