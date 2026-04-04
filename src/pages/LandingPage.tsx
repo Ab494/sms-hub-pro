@@ -66,7 +66,7 @@ export default function LandingPage() {
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[hsl(174,72%,46%)]">
               <MessageSquare className="h-5 w-5 text-[hsl(0,0%,100%)]" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-foreground">BulkSMS</span>
+            <span className="text-xl font-bold tracking-tight text-foreground">TumaPrime SMS</span>
           </div>
 
           <nav className="hidden md:flex items-center gap-8">
