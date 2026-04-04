@@ -77,7 +77,7 @@ export function AppSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: A
             <MessageSquare className="h-4 w-4 text-primary-foreground" />
           </div>
           {!collapsed && (
-            <span className="text-lg font-semibold text-foreground tracking-tight">BulkSMS</span>
+            <span className="text-lg font-semibold text-foreground tracking-tight">TumaPrime SMS</span>
           )}
         </div>
 

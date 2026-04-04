@@ -293,7 +293,7 @@ export default function LandingPage() {
             ))}
           </div>
           <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground">
-            © 2026 BulkSMS. All rights reserved.
+            © 2026 TumaPrime SMS. Powered by 254 Convex Communication LTD. All rights reserved.
           </div>
         </div>
       </footer>
