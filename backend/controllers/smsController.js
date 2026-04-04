@@ -19,23 +19,49 @@ export const sendSMS = async (req, res, next) => {
   try {
     const { phone, message, senderId } = req.body;
 
+    console.log('SMS Send Request:', { phone, message: message?.substring(0, 50), senderId, userId: req.user._id });
+
     // Validate
     if (!phone || !message) {
+      console.log('Validation failed: missing phone or message');
       return res.status(400).json({
         success: false,
         message: 'Phone number and message are required'
       });
     }
 
+    // Validate phone number format
+    const phoneRegex = /^(\+?254|0)?[17]\d{8}$/;
+    if (!phoneRegex.test(phone.replace(/\s+/g, ''))) {
+      console.log('Invalid phone number format:', phone);
+      return res.status(400).json({
+        success: false,
+        message: 'Please enter a valid Kenyan phone number (e.g., 0712345678 or +254712345678)'
+      });
+    }
+
     const user = await User.findById(req.user._id);
+    if (!user) {
+      console.log('User not found:', req.user._id);
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    console.log('User balance:', user.smsBalance);
+
     const finalSenderId = senderId || user.senderId || process.env.DEFAULT_SENDER_ID;
 
     // Calculate cost
     const segments = Math.ceil(message.length / 160);
     const totalCost = segments;
 
+    console.log('Calculated cost:', { segments, totalCost });
+
     // Check SMS balance before sending
     if (user.smsBalance < totalCost) {
+      console.log('Insufficient balance:', { userBalance: user.smsBalance, required: totalCost });
       return res.status(400).json({
         success: false,
         message: `Insufficient SMS balance. Need ${totalCost} credits, you have ${user.smsBalance}`

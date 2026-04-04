@@ -22,13 +22,17 @@ const API_BASE_URL = 'https://sms.blessedtexts.com/api/sms/v1';
  */
 export const sendSMS = async (phone, message, senderId = DEFAULT_SENDER_ID) => {
   try {
+    console.log('Sending SMS:', { phone, messageLength: message.length, senderId });
+
     // Validate API key
     if (!BLESSEDTEXTS_API_KEY) {
-      throw new Error('BlessedTexts API key not configured');
+      console.error('BlessedTexts API key not configured');
+      throw new Error('SMS service not configured');
     }
 
     // Format phone number - BlessedTexts expects formats like 254722XXXXXX or 0722XXXXXX
     const formattedPhone = formatPhoneNumberBlessedTexts(phone);
+    console.log('Formatted phone:', formattedPhone);
 
     const payload = {
       api_key: BLESSEDTEXTS_API_KEY,

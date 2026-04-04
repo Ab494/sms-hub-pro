@@ -52,9 +52,21 @@ export default function SendSmsPage() {
       return;
     }
 
+    // Validate phone number format
+    const phoneRegex = /^(\+?254|0)?[17]\d{8}$/;
+    const cleanPhone = phone.replace(/\s+/g, '');
+    if (!phoneRegex.test(cleanPhone)) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please enter a valid Kenyan phone number (e.g., 0712345678 or +254712345678)"
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      const res = await smsAPI.send({ phone, message });
+      const res = await smsAPI.send({ phone: cleanPhone, message });
       toast({
         title: "Success",
         description: res.data.message || "SMS queued for delivery"

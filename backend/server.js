@@ -10,8 +10,6 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Debug: log if API key is loaded (remove in production)
-
 // Import routes
 import authRoutes from './routes/authRoutes.js';
 import contactsRoutes from './routes/contactsRoutes.js';
@@ -137,6 +135,33 @@ app.get('/api/health', (req, res) => {
     message: 'SMS Hub API is running',
     timestamp: new Date().toISOString(),
     version: '1.0.0'
+  });
+});
+
+// Debug endpoint for SMS configuration
+app.get('/api/debug/sms', (req, res) => {
+  res.json({
+    success: true,
+    config: {
+      hasApiKey: !!process.env.BLESSEDTEXTS_API_KEY,
+      hasSender: !!process.env.BLESSEDTEXTS_SENDER,
+      defaultSenderId: process.env.DEFAULT_SENDER_ID,
+      apiUrl: 'https://sms.blessedtexts.com/api/sms/v1'
+    }
+  });
+});
+
+// Test SMS endpoint (for debugging)
+app.post('/api/test/sms', (req, res) => {
+  console.log('Test SMS request received:', {
+    body: req.body,
+    headers: req.headers,
+    user: req.user ? req.user._id : 'no user'
+  });
+  res.json({
+    success: true,
+    received: req.body,
+    hasAuth: !!req.user
   });
 });
 
