@@ -150,9 +150,38 @@ app.get('/api/debug/sms', (req, res) => {
       hasApiKey: !!process.env.BLESSEDTEXTS_API_KEY,
       hasSender: !!process.env.BLESSEDTEXTS_SENDER,
       defaultSenderId: process.env.DEFAULT_SENDER_ID,
-      apiUrl: 'https://sms.blessedtexts.com/api/sms/v1'
+      apiUrl: 'https://sms.blessedtexts.com/api/sms/v1',
+      nodeEnv: process.env.NODE_ENV,
+      clientUrl: process.env.CLIENT_URL
     }
   });
+});
+
+// Debug endpoint for all environment variables (remove after debugging)
+app.get('/api/debug/env', (req, res) => {
+  try {
+    const envVars = {};
+    const smsVars = ['BLESSEDTEXTS_API_KEY', 'BLESSEDTEXTS_SENDER', 'DEFAULT_SENDER_ID', 'NODE_ENV', 'CLIENT_URL'];
+
+    smsVars.forEach(key => {
+      envVars[key] = {
+        exists: !!process.env[key],
+        value: process.env[key] ? (key.includes('API_KEY') ? '***' + process.env[key].slice(-4) : process.env[key]) : null
+      };
+    });
+
+    res.json({
+      success: true,
+      environment: envVars,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Debug endpoint error',
+      error: error.message
+    });
+  }
 });
 
 // Test SMS endpoint (for debugging)
