@@ -251,7 +251,7 @@ export default function LandingPage() {
             Ready to reach your audience?
           </h2>
           <p className="text-[hsl(0,0%,100%)]/80 mb-8 text-lg">
-            Join thousands of businesses using BulkSMS to communicate effectively.
+            Join thousands of businesses using TumaPrime SMS to communicate effectively.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button size="lg" className="bg-[hsl(0,0%,100%)] text-[hsl(174,72%,46%)] hover:bg-[hsl(0,0%,95%)] rounded-full px-8 text-base h-12 font-semibold" onClick={() => { setIsLogin(false); setShowAuthModal(true); }}>
