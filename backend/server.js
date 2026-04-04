@@ -184,6 +184,38 @@ app.get('/api/debug/env', (req, res) => {
   }
 });
 
+// Debug endpoint for database state
+app.get('/api/debug/db', async (req, res) => {
+  try {
+    const db = mongoose.connection.db;
+
+    const userCount = await db.collection('users').countDocuments();
+    const adminUser = await db.collection('users').findOne({ email: 'admin@smshubpro.com' }, { projection: { password: 0 } });
+    const settingsCount = await db.collection('platformsettings').countDocuments();
+
+    res.json({
+      success: true,
+      database: {
+        userCount,
+        adminUser: adminUser ? {
+          email: adminUser.email,
+          role: adminUser.role,
+          smsBalance: adminUser.smsBalance,
+          isActive: adminUser.isActive
+        } : null,
+        settingsCount,
+        collections: await db.listCollections().toArray().then(cols => cols.map(c => c.name))
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Database debug error',
+      error: error.message
+    });
+  }
+});
+
 // Test SMS endpoint (for debugging)
 app.post('/api/test/sms', (req, res) => {
   console.log('Test SMS request received:', {
@@ -206,7 +238,7 @@ app.post('/api/init-platform', async (req, res) => {
     // Initialize platform settings
     const defaultSettings = [
       { key: 'sms_price_per_unit', value: 0.50, description: 'Price charged to customers per SMS unit', isPublic: true },
-      { key: 'sms_cost_per_unit', value: 0.35, description: 'Cost paid to BlessedTexts per SMS unit', isPublic: false },
+      { key: 'sms_cost_per_unit', value: 0.46, description: 'Cost paid to BlessedTexts per SMS unit', isPublic: false },
       { key: 'minimum_credit_purchase', value: 100, description: 'Minimum credits to purchase at once', isPublic: true },
       { key: 'bonus_credits_percent', value: 0, description: 'Bonus credits percentage on purchase', isPublic: true },
       { key: 'default_sender_id', value: 'FERRITE', description: 'Default sender ID for SMS', isPublic: true },
@@ -244,6 +276,45 @@ app.post('/api/init-platform', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Initialization failed',
+      error: error.message
+    });
+  }
+});
+
+// Update SMS cost (temporary admin endpoint)
+app.post('/api/admin/update-sms-cost', async (req, res) => {
+  try {
+    const { cost } = req.body;
+
+    if (!cost || typeof cost !== 'number' || cost <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valid cost per unit is required'
+      });
+    }
+
+    const db = mongoose.connection.db;
+    await db.collection('platformsettings').updateOne(
+      { key: 'sms_cost_per_unit' },
+      {
+        $set: {
+          value: cost,
+          description: `Cost paid to BlessedTexts per SMS unit (updated to ${cost} KES)`,
+          updatedAt: new Date()
+        }
+      }
+    );
+
+    res.json({
+      success: true,
+      message: `SMS cost updated to ${cost} KES per unit`,
+      newCost: cost
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Update failed',
       error: error.message
     });
   }
