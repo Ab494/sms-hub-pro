@@ -151,6 +151,20 @@ app.get('/api/debug/sms', (req, res) => {
   });
 });
 
+// Test SMS endpoint (requires auth)
+app.post('/api/test/sms', protect, (req, res) => {
+  const { phone, message } = req.body;
+  
+  res.json({
+    success: true,
+    received: { phone, message },
+    user: req.user ? { id: req.user._id, email: req.user.email } : null,
+    config: {
+      hasApiKey: !!process.env.BLESSEDTEXTS_API_KEY
+    }
+  });
+});
+
 // Test SMS endpoint (for debugging)
 app.post('/api/test/sms', (req, res) => {
   console.log('Test SMS request received:', {

@@ -27,7 +27,11 @@ export const sendSMS = async (phone, message, senderId = DEFAULT_SENDER_ID) => {
     // Validate API key
     if (!BLESSEDTEXTS_API_KEY) {
       console.error('BlessedTexts API key not configured');
-      throw new Error('SMS service not configured');
+      return {
+        success: false,
+        error: 'SMS service not configured. Please contact administrator.',
+        code: 500
+      };
     }
 
     // Format phone number - BlessedTexts expects formats like 254722XXXXXX or 0722XXXXXX
