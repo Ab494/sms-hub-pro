@@ -110,24 +110,29 @@ export const groupsAPI = {
 
 // SMS API
 export const smsAPI = {
-  send: (data: { phone: string; message: string; senderId?: string }) =>
+  send: (data: { phone: string; message: string }) =>
     api.post('/sms/send', data),
-  
+
   sendBulk: (data: { phones?: string[]; message: string; groupId?: string; name?: string; senderId?: string }) =>
     api.post('/sms/bulk', data),
-  
+
+  uploadContacts: (formData: FormData) =>
+    api.post('/sms/upload-contacts', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+
   getCampaigns: (params?: { page?: number; limit?: number; status?: string }) =>
     api.get('/sms/campaigns', { params }),
-  
+
   getCampaign: (id: string) =>
     api.get(`/sms/campaigns/${id}`),
-  
+
   cancelCampaign: (id: string) =>
     api.post(`/sms/campaigns/${id}/cancel`),
-  
+
   getLogs: (params?: { page?: number; limit?: number; status?: string; campaignId?: string; search?: string }) =>
     api.get('/sms/logs', { params }),
-  
+
   getStats: () =>
     api.get('/sms/stats'),
 };

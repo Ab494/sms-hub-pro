@@ -4,6 +4,8 @@ import Contact from '../models/Contact.js';
 import User from '../models/User.js';
 import { sendSMS as sendSMSApi } from '../services/smsService.js';
 import { deductCredits } from '../controllers/creditsController.js';
+import csv from 'csv-parser';
+import * as XLSX from 'xlsx';
 
 /**
  * SMS Controller
@@ -524,4 +526,185 @@ export const cancelCampaign = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+/**
+ * @desc    Upload and parse contacts file (CSV/Excel)
+ * @route   POST /api/sms/upload-contacts
+ * @access  Private
+ */
+export const uploadContacts = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No file uploaded'
+      });
+    }
+
+    const file = req.file;
+    const contacts = [];
+
+    // Parse CSV file
+    if (file.mimetype === 'text/csv' || file.originalname.endsWith('.csv')) {
+      const results = [];
+
+      // Parse CSV
+      const csvData = file.buffer.toString('utf-8');
+      const lines = csvData.split('\n').filter(line => line.trim());
+
+      if (lines.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'CSV file is empty'
+        });
+      }
+
+      // Parse header
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+
+      // Find phone column
+      const phoneIndex = headers.findIndex(h =>
+        h.includes('phone') || h.includes('telephone') || h.includes('mobile') || h.includes('contact') || h.includes('number')
+      );
+
+      if (phoneIndex === -1) {
+        return res.status(400).json({
+          success: false,
+          message: 'No phone column found. Please include a column with "phone", "telephone", "mobile", "contact", or "number" in the header'
+        });
+      }
+
+      // Find name column (optional)
+      const nameIndex = headers.findIndex(h =>
+        h.includes('name') || h.includes('full_name') || h.includes('firstname') || h.includes('contact_name')
+      );
+
+      // Parse data rows
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+        if (values.length > phoneIndex) {
+          const phone = values[phoneIndex];
+          const name = nameIndex !== -1 && values.length > nameIndex ? values[nameIndex] : undefined;
+
+          if (phone && isValidPhoneNumber(phone)) {
+            contacts.push({
+              name: name || undefined,
+              phone: normalizePhoneNumber(phone)
+            });
+          }
+        }
+      }
+    }
+    // Parse Excel file
+    else if (file.mimetype.includes('spreadsheet') || file.originalname.endsWith('.xlsx') || file.originalname.endsWith('.xls')) {
+      const workbook = XLSX.read(file.buffer, { type: 'buffer' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+
+      // Convert to JSON
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+      if (jsonData.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Excel file is empty'
+        });
+      }
+
+      // Parse header
+      const headers = jsonData[0].map(h => String(h).toLowerCase().trim());
+
+      // Find phone column
+      const phoneIndex = headers.findIndex(h =>
+        h.includes('phone') || h.includes('telephone') || h.includes('mobile') || h.includes('contact') || h.includes('number')
+      );
+
+      if (phoneIndex === -1) {
+        return res.status(400).json({
+          success: false,
+          message: 'No phone column found. Please include a column with "phone", "telephone", "mobile", "contact", or "number" in the header'
+        });
+      }
+
+      // Find name column (optional)
+      const nameIndex = headers.findIndex(h =>
+        h.includes('name') || h.includes('full_name') || h.includes('firstname') || h.includes('contact_name')
+      );
+
+      // Parse data rows
+      for (let i = 1; i < jsonData.length; i++) {
+        const row = jsonData[i];
+        if (row.length > phoneIndex) {
+          const phone = String(row[phoneIndex] || '').trim();
+          const name = nameIndex !== -1 && row.length > nameIndex ? String(row[nameIndex] || '').trim() : undefined;
+
+          if (phone && isValidPhoneNumber(phone)) {
+            contacts.push({
+              name: name || undefined,
+              phone: normalizePhoneNumber(phone)
+            });
+          }
+        }
+      }
+    }
+
+    if (contacts.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No valid phone numbers found in the file'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        contacts,
+        totalContacts: contacts.length
+      },
+      message: `Successfully parsed ${contacts.length} contacts with valid phone numbers`
+    });
+
+  } catch (error) {
+    console.error('File upload error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to parse file. Please check the file format.'
+    });
+  }
+};
+
+// Helper functions for phone number validation and normalization
+const isValidPhoneNumber = (phone) => {
+  // Remove all non-digit characters
+  const cleanPhone = phone.replace(/\D/g, '');
+
+  // Check if it's a valid Kenyan number
+  const kenyaRegex = /^(\+?254|0)?[17]\d{8}$/;
+  return kenyaRegex.test(cleanPhone);
+};
+
+const normalizePhoneNumber = (phone) => {
+  // Remove all non-digit characters
+  let cleanPhone = phone.replace(/\D/g, '');
+
+  // Convert to international format
+  if (cleanPhone.startsWith('0')) {
+    cleanPhone = '254' + cleanPhone.slice(1);
+  } else if (!cleanPhone.startsWith('254')) {
+    cleanPhone = '254' + cleanPhone;
+  }
+
+  return cleanPhone;
+};
+
+export default {
+  sendSMS,
+  sendBulkSMS,
+  uploadContacts,
+  getCampaigns,
+  getCampaign,
+  getSMSLogs,
+  getSMSStats,
+  cancelCampaign
 };
