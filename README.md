@@ -150,6 +150,31 @@ sms-hub-pro/
 - `GET /api/admin/transactions` - List transactions
 - `PUT /api/admin/settings` - Update platform settings
 
+## Security
+
+### Environment Variables
+
+⚠️ **Never commit `.env` files to version control!**
+
+This project includes `.env` files in `.gitignore` to prevent accidental commits of sensitive data like:
+- API keys and secrets
+- Database passwords
+- JWT tokens
+- Payment credentials
+
+**Setup:**
+```bash
+# Frontend
+cp .env.example .env
+
+# Backend
+cd backend && cp .env.example .env
+```
+
+**Required Variables:**
+- **Frontend**: `VITE_API_URL`, `VITE_GOOGLE_CLIENT_ID`
+- **Backend**: `MONGODB_URI`, `JWT_SECRET`, `BLESSEDTEXTS_API_KEY`, etc.
+
 ## Testing
 
 Run tests with:
