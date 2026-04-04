@@ -322,18 +322,37 @@ app.post('/api/admin/update-sms-cost', async (req, res) => {
 
 // Serve static files in production (MUST come before 404 handler)
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../dist')));
+  const distPath = path.join(__dirname, '../dist');
+  console.log('Serving static files from:', distPath);
+
+  app.use(express.static(distPath));
 
   // Catch all handler: send back React's index.html file for client-side routing
   app.get('*', (req, res) => {
+    console.log('Catch-all route hit:', req.path);
+
     // Skip API routes
     if (req.path.startsWith('/api/')) {
+      console.log('API route detected, returning 404');
       return res.status(404).json({
         success: false,
         message: 'API endpoint not found'
       });
     }
-    res.sendFile(path.join(__dirname, '../dist/index.html'));
+
+    const indexPath = path.join(distPath, 'index.html');
+    console.log('Serving index.html from:', indexPath);
+
+    // Check if file exists before sending
+    if (require('fs').existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      console.log('index.html not found at:', indexPath);
+      res.status(404).json({
+        success: false,
+        message: 'React app not built'
+      });
+    }
   });
 }
 
