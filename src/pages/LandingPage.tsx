@@ -275,7 +275,7 @@ export default function LandingPage() {
                 </div>
                 <span className="text-lg font-bold text-foreground">TumaPrime SMS</span>
               </div>
-              <p className="text-sm text-muted-foreground">Empowering business communication across Africa and beyond.</p>
+              <p className="text-sm text-muted-foreground">Powered by 254 Convex Communication LTD</p>
             </div>
             {[
               { title: "Product", links: ["Bulk SMS", "Campaigns", "Analytics", "API"] },
