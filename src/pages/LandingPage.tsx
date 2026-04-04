@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import heroPerson1 from "@/assets/hero-person-1.png";
-import heroPerson2 from "@/assets/hero-person-2.png";
+import promo1 from "@/assets/promo-1.jpeg";
+import promo2 from "@/assets/promo-2.jpeg";
+import promo3 from "@/assets/promo-3.jpeg";
+import promo4 from "@/assets/promo-4.jpeg";
 import { useAuth } from "@/contexts/AuthContext";
 
 const services = [
@@ -139,27 +141,12 @@ export default function LandingPage() {
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-[hsl(174,72%,46%)]/10 rounded-full blur-3xl" />
               
               <div className="relative grid grid-cols-2 gap-4">
-                <div className="space-y-4">
-                  <div className="rounded-2xl overflow-hidden shadow-xl border-4 border-[hsl(174,72%,46%)]/20">
-                    <img src={heroPerson1} alt="Person using SMS service" className="w-full h-72 object-cover object-top" />
-                  </div>
-                  <div className="h-24 w-24 mx-auto border-4 border-[hsl(340,82%,52%)]/30 rounded-full" />
+                <div className="rounded-2xl overflow-hidden shadow-xl border-4 border-[hsl(174,72%,46%)]/20">
+                  <img src={promo1} alt="TumaPrime SMS - Bulk SMS Solutions" className="w-full h-72 object-cover" />
                 </div>
-                <div className="space-y-4 pt-12">
-                  <div className="h-16 w-16 border-4 border-[hsl(174,72%,46%)]/30 rounded-lg" />
-                  <div className="rounded-2xl overflow-hidden shadow-xl border-4 border-[hsl(340,82%,52%)]/20">
-                    <img src={heroPerson2} alt="People using mobile phones" className="w-full h-64 object-cover" />
-                  </div>
+                <div className="rounded-2xl overflow-hidden shadow-xl border-4 border-[hsl(340,82%,52%)]/20 mt-8">
+                  <img src={promo2} alt="TumaPrime SMS - Affordable Messaging" className="w-full h-72 object-cover" />
                 </div>
-              </div>
-
-              {/* Services floating card */}
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-card border border-border rounded-xl shadow-lg p-4 space-y-1 min-w-[160px]">
-                {["Bulk SMS", "Campaigns", "Contacts", "Analytics", "Reports"].map((s, i) => (
-                  <div key={s} className={`text-sm py-1.5 px-3 rounded-md cursor-pointer transition-colors ${i === 0 ? "bg-[hsl(174,72%,46%)]/10 text-[hsl(174,72%,46%)] font-medium" : "text-muted-foreground hover:text-foreground"}`}>
-                    {s}
-                  </div>
-                ))}
               </div>
             </div>
           </div>
@@ -181,6 +168,24 @@ export default function LandingPage() {
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">{service.label}</h3>
                 <p className="text-sm text-muted-foreground">{service.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      {/* Promo Gallery */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Trusted Across Kenya</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Fixed rate of only Kshs 0.46 per SMS — cross-network delivery, no monthly charges, no setup fee.</p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[promo1, promo2, promo3, promo4].map((img, i) => (
+              <div key={i} className="rounded-2xl overflow-hidden shadow-lg border border-border hover:shadow-xl transition-shadow duration-300 hover:-translate-y-1">
+                <img src={img} alt={`TumaPrime SMS promo ${i + 1}`} className="w-full h-64 object-cover" />
               </div>
             ))}
           </div>
