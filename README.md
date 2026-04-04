@@ -159,20 +159,33 @@ npm run test
 
 ## Deployment
 
-1. Build the frontend:
-   ```bash
-   npm run build
-   ```
+### Quick Deploy
 
-2. Set environment variables for production
+1. **Backend**: Use `render.yaml` for Render deployment
+2. **Frontend**: Deploy to Vercel/Netlify
+3. **Database**: MongoDB Atlas (free tier)
 
-3. Start the backend server:
-   ```bash
-   cd backend
-   npm start
-   ```
+### Detailed Instructions
 
-The backend will serve the built frontend from the `dist` directory.
+See `DEPLOYMENT.md` for comprehensive deployment guide including:
+
+- Environment variable setup
+- Database configuration
+- Platform initialization
+- Troubleshooting common issues
+
+### Production Scripts
+
+```bash
+# Check deployment readiness
+cd backend && npm run check
+
+# Initialize platform settings
+cd backend && npm run init your-admin@email.com
+
+# Test SMS API
+cd backend && npm run test-sms 0712345678
+```
 
 ## Contributing
 

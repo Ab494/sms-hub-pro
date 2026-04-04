@@ -45,6 +45,8 @@ export const sendSMS = async (phone, message, senderId = DEFAULT_SENDER_ID) => {
       phone: formattedPhone
     };
 
+    console.log('SMS Payload:', payload);
+
     const response = await axios.post(
       `${API_BASE_URL}/sendsms`,
       payload,
