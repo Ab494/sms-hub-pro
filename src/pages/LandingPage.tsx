@@ -18,8 +18,10 @@ const services = [
 ];
 
 const features = [
-  "99.9% delivery rate guarantee",
-  "Send to 50+ countries worldwide",
+  "Fixed rate of only Kshs 0.46 per SMS",
+  "Cross-network delivery across all networks",
+  "No monthly charges or hidden fees",
+  "No setup fee — start sending immediately",
   "Real-time delivery reports",
   "Import contacts via CSV",
   "Smart scheduling & automation",
