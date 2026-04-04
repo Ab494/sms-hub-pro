@@ -18,8 +18,10 @@ const services = [
 ];
 
 const features = [
-  "99.9% delivery rate guarantee",
-  "Send to 50+ countries worldwide",
+  "Fixed rate of only Kshs 0.46 per SMS",
+  "Cross-network delivery across all networks",
+  "No monthly charges or hidden fees",
+  "No setup fee — start sending immediately",
   "Real-time delivery reports",
   "Import contacts via CSV",
   "Smart scheduling & automation",
@@ -122,7 +124,7 @@ export default function LandingPage() {
                 <span className="text-[hsl(340,82%,52%)]">Reach</span>
               </h1>
               <p className="text-muted-foreground text-lg max-w-md">
-                Reach thousands of customers instantly with our powerful bulk SMS platform. Reliable, fast, and affordable.
+                Reach thousands of customers instantly at a fixed rate of only <span className="font-bold text-[hsl(174,72%,46%)]">Kshs 0.46</span> per SMS. Cross-network delivery, no monthly charges, no setup fee.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button size="lg" className="bg-[hsl(340,82%,52%)] hover:bg-[hsl(340,82%,45%)] text-[hsl(0,0%,100%)] rounded-full px-8 text-base h-12" onClick={() => { setIsLogin(false); setShowAuthModal(true); }}>

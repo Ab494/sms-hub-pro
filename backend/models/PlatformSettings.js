@@ -63,9 +63,9 @@ platformSettingsSchema.statics.getPricing = async function() {
   
   // Set defaults if not configured
   return {
-    sms_price_per_unit: pricing.sms_price_per_unit || 0.50,
+    sms_price_per_unit: pricing.sms_price_per_unit || 0.46,
     sms_cost_per_unit: pricing.sms_cost_per_unit || 0.35,
-    minimum_credit_purchase: pricing.minimum_credit_purchase || 100,
+    minimum_credit_purchase: pricing.minimum_credit_purchase || 50,
     bonus_credits_percent: pricing.bonus_credits_percent || 0,
     currency: pricing.currency || 'KES'
   };
@@ -74,9 +74,9 @@ platformSettingsSchema.statics.getPricing = async function() {
 // Static method to initialize default settings
 platformSettingsSchema.statics.initializeDefaults = async function() {
   const defaults = [
-    { key: 'sms_price_per_unit', value: 0.50, description: 'Price per SMS unit charged to companies', isPublic: true },
+    { key: 'sms_price_per_unit', value: 0.46, description: 'Price per SMS unit charged to companies (Kshs 0.46)', isPublic: true },
     { key: 'sms_cost_per_unit', value: 0.35, description: 'Cost per SMS unit paid to BlessedTexts', isPublic: false },
-    { key: 'minimum_credit_purchase', value: 100, description: 'Minimum credits to purchase', isPublic: true },
+    { key: 'minimum_credit_purchase', value: 50, description: 'Minimum credits to purchase', isPublic: true },
     { key: 'bonus_credits_percent', value: 0, description: 'Bonus credits percentage on purchase', isPublic: true },
     { key: 'default_sender_id', value: 'FERRITE', description: 'Default sender ID', isPublic: true },
     { key: 'currency', value: 'KES', description: 'Currency', isPublic: true },
