@@ -63,9 +63,9 @@ platformSettingsSchema.statics.getPricing = async function() {
   
   // Set defaults if not configured
   return {
-    sms_price_per_unit: pricing.sms_price_per_unit || 0.50,
+    sms_price_per_unit: pricing.sms_price_per_unit || 0.46,
     sms_cost_per_unit: pricing.sms_cost_per_unit || 0.35,
-    minimum_credit_purchase: pricing.minimum_credit_purchase || 100,
+    minimum_credit_purchase: pricing.minimum_credit_purchase || 50,
     bonus_credits_percent: pricing.bonus_credits_percent || 0,
     currency: pricing.currency || 'KES'
   };
