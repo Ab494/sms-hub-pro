@@ -198,6 +198,57 @@ app.post('/api/test/sms', (req, res) => {
   });
 });
 
+// Initialize platform settings (temporary endpoint)
+app.post('/api/init-platform', async (req, res) => {
+  try {
+    const db = mongoose.connection.db;
+
+    // Initialize platform settings
+    const defaultSettings = [
+      { key: 'sms_price_per_unit', value: 0.50, description: 'Price charged to customers per SMS unit', isPublic: true },
+      { key: 'sms_cost_per_unit', value: 0.35, description: 'Cost paid to BlessedTexts per SMS unit', isPublic: false },
+      { key: 'minimum_credit_purchase', value: 100, description: 'Minimum credits to purchase at once', isPublic: true },
+      { key: 'bonus_credits_percent', value: 0, description: 'Bonus credits percentage on purchase', isPublic: true },
+      { key: 'default_sender_id', value: 'FERRITE', description: 'Default sender ID for SMS', isPublic: true },
+      { key: 'currency', value: 'KES', description: 'Currency for transactions', isPublic: true },
+      { key: 'payment_methods', value: ['mpesa', 'bank_transfer'], description: 'Available payment methods', isPublic: true },
+      { key: 'business_name', value: 'SMS Hub Pro', description: 'Business name for invoices', isPublic: true },
+      { key: 'contact_email', value: 'admin@smshubpro.com', description: 'Contact email', isPublic: true },
+      { key: 'contact_phone', value: '+254700000000', description: 'Contact phone', isPublic: true }
+    ];
+
+    for (const setting of defaultSettings) {
+      await db.collection('platformsettings').updateOne(
+        { key: setting.key },
+        { $set: setting },
+        { upsert: true }
+      );
+    }
+
+    // Check admin user
+    const adminUser = await db.collection('users').findOne({ email: 'admin@smshubpro.com' });
+
+    res.json({
+      success: true,
+      message: 'Platform settings initialized',
+      settingsCount: defaultSettings.length,
+      adminUserExists: !!adminUser,
+      adminUser: adminUser ? {
+        email: adminUser.email,
+        role: adminUser.role,
+        smsBalance: adminUser.smsBalance
+      } : null
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Initialization failed',
+      error: error.message
+    });
+  }
+});
+
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../dist')));
