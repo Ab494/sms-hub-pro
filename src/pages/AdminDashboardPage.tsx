@@ -160,10 +160,25 @@ export default function AdminDashboardPage() {
             </p>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Available for Withdrawal</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              KES {(stats?.credits.profit - (stats?.withdrawals?.totalWithdrawn || 0))?.toLocaleString() || 0}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              <span className="text-blue-600">KES {(stats?.withdrawals?.totalWithdrawn || 0).toLocaleString()} withdrawn</span>
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Link to="/admin/companies">
           <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
             <CardContent className="pt-6">
@@ -190,6 +205,22 @@ export default function AdminDashboardPage() {
                 <div>
                   <h3 className="font-semibold">Transactions</h3>
                   <p className="text-sm text-muted-foreground">View credit transactions</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link to="/admin/withdrawals">
+          <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-green-100 rounded-lg">
+                  <DollarSign className="h-6 w-6 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Withdrawals</h3>
+                  <p className="text-sm text-muted-foreground">Manage profit withdrawals</p>
                 </div>
               </div>
             </CardContent>

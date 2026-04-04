@@ -16,6 +16,7 @@ import {
   Shield,
   CreditCard,
   Building2,
+  DollarSign,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,7 @@ const adminMenuItems = [
   { label: "Admin Dashboard", icon: Shield, path: "/admin/dashboard" },
   { label: "Companies", icon: Building2, path: "/admin/companies" },
   { label: "Transactions", icon: CreditCard, path: "/admin/transactions" },
+  { label: "Withdrawals", icon: DollarSign, path: "/admin/withdrawals" },
   { label: "Platform Settings", icon: Settings, path: "/admin/settings" },
 ];
 

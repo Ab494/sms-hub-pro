@@ -23,6 +23,7 @@ const AdminDashboardPage = React.lazy(() => import("@/pages/AdminDashboardPage")
 const AdminCompaniesPage = React.lazy(() => import("@/pages/AdminCompaniesPage"));
 const AdminTransactionsPage = React.lazy(() => import("@/pages/AdminTransactionsPage"));
 const AdminSettingsPage = React.lazy(() => import("@/pages/AdminSettingsPage"));
+const WithdrawalsPage = React.lazy(() => import("@/pages/WithdrawalsPage"));
 const NotFound = React.lazy(() => import("@/pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -109,10 +110,11 @@ function AppRoutes() {
             }
           >
             <Route index element={<Navigate to="/admin/dashboard" replace />} />
-            <Route path="dashboard" element={<AdminDashboardPage />} />
-            <Route path="companies" element={<AdminCompaniesPage />} />
-            <Route path="transactions" element={<AdminTransactionsPage />} />
-            <Route path="settings" element={<AdminSettingsPage />} />
+          <Route path="dashboard" element={<AdminDashboardPage />} />
+          <Route path="companies" element={<AdminCompaniesPage />} />
+          <Route path="transactions" element={<AdminTransactionsPage />} />
+          <Route path="withdrawals" element={<WithdrawalsPage />} />
+          <Route path="settings" element={<AdminSettingsPage />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />

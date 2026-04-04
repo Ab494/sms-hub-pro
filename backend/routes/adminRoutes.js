@@ -10,7 +10,11 @@ import {
   getAllTransactions,
   getAllSMSLogs,
   getAllCampaigns,
-  toggleUserActive
+  toggleUserActive,
+  requestWithdrawal,
+  getWithdrawals,
+  processWithdrawal,
+  getWithdrawalStats
 } from '../controllers/adminController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 
@@ -37,6 +41,12 @@ router.get('/sms-logs', getAllSMSLogs);
 
 // Campaigns
 router.get('/campaigns', getAllCampaigns);
+
+// Withdrawal management
+router.post('/withdrawals', requestWithdrawal);
+router.get('/withdrawals', getWithdrawals);
+router.put('/withdrawals/:id', processWithdrawal);
+router.get('/withdrawals/stats', getWithdrawalStats);
 
 // Settings management
 router.get('/settings', getPlatformSettings);

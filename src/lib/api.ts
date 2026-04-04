@@ -190,6 +190,28 @@ export const adminAPI = {
   // Campaigns
   getCampaigns: (params?: { page?: number; limit?: number; userId?: string; status?: string }) =>
     api.get('/admin/campaigns', { params }),
+
+  // Withdrawals
+  requestWithdrawal: (data: {
+    amount: number;
+    method: 'mpesa' | 'bank_transfer';
+    recipientDetails: {
+      phone?: string;
+      accountName?: string;
+      accountNumber?: string;
+      bankName?: string;
+    };
+  }) =>
+    api.post('/admin/withdrawals', data),
+
+  getWithdrawals: (params?: { page?: number; limit?: number; status?: string }) =>
+    api.get('/admin/withdrawals', { params }),
+
+  processWithdrawal: (id: string, data: { action: 'complete' | 'fail' | 'cancel'; notes?: string }) =>
+    api.put(`/admin/withdrawals/${id}`, data),
+
+  getWithdrawalStats: () =>
+    api.get('/admin/withdrawals/stats'),
 };
 
 export default api;

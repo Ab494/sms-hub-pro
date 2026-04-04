@@ -2,6 +2,7 @@ import User from '../models/User.js';
 import CreditTransaction from '../models/CreditTransaction.js';
 import SMSLog from '../models/SMSLog.js';
 import Campaign from '../models/Campaign.js';
+import Withdrawal from '../models/Withdrawal.js';
 
 /**
  * Admin Controller
@@ -531,6 +532,225 @@ export const getAllCampaigns = async (req, res, next) => {
 };
 
 /**
+ * @desc    Request a profit withdrawal
+ * @route   POST /api/admin/withdrawals
+ * @access  Private (Admin only)
+ */
+export const requestWithdrawal = async (req, res, next) => {
+  try {
+    const { amount, method, recipientDetails } = req.body;
+
+    // Validate amount
+    if (!amount || amount < 100) {
+      return res.status(400).json({
+        success: false,
+        message: 'Minimum withdrawal amount is KES 100'
+      });
+    }
+
+    // Check available profit
+    const [creditStats] = await CreditTransaction.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: '$price' },
+          totalCost: { $sum: '$cost' }
+        }
+      }
+    ]);
+
+    const availableProfit = (creditStats?.totalRevenue || 0) - (creditStats?.totalCost || 0);
+
+    // Check already requested withdrawals
+    const [withdrawalStats] = await Withdrawal.aggregate([
+      { $match: { status: { $in: ['pending', 'processing'] } } },
+      { $group: { _id: null, totalPending: { $sum: '$amount' } } }
+    ]);
+
+    const availableForWithdrawal = availableProfit - (withdrawalStats?.totalPending || 0);
+
+    if (amount > availableForWithdrawal) {
+      return res.status(400).json({
+        success: false,
+        message: `Insufficient funds. Available for withdrawal: KES ${availableForWithdrawal.toLocaleString()}`
+      });
+    }
+
+    // Create withdrawal request
+    const withdrawal = await Withdrawal.create({
+      requestedBy: req.user._id,
+      amount,
+      method,
+      recipientDetails
+    });
+
+    res.status(201).json({
+      success: true,
+      data: {
+        withdrawal: {
+          id: withdrawal._id,
+          amount: withdrawal.amount,
+          method: withdrawal.method,
+          status: withdrawal.status,
+          createdAt: withdrawal.createdAt
+        }
+      },
+      message: 'Withdrawal request submitted successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Get all withdrawals
+ * @route   GET /api/admin/withdrawals
+ * @access  Private (Admin only)
+ */
+export const getWithdrawals = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 20, status } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const query = {};
+    if (status) query.status = status;
+
+    const [withdrawals, total] = await Promise.all([
+      Withdrawal.find(query)
+        .populate('requestedBy', 'name email')
+        .populate('processedBy', 'name email')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(parseInt(limit)),
+      Withdrawal.countDocuments(query)
+    ]);
+
+    // Get totals
+    const totals = await Withdrawal.aggregate([
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 },
+          total: { $sum: '$amount' }
+        }
+      }
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        withdrawals,
+        totals,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total,
+          pages: Math.ceil(total / parseInt(limit))
+        }
+      },
+      message: 'Withdrawals retrieved successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Process a withdrawal (approve/reject)
+ * @route   PUT /api/admin/withdrawals/:id
+ * @access  Private (Admin only)
+ */
+export const processWithdrawal = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { action, notes } = req.body; // action: 'complete', 'fail', 'cancel'
+
+    const withdrawal = await Withdrawal.findById(id);
+    if (!withdrawal) {
+      return res.status(404).json({
+        success: false,
+        message: 'Withdrawal not found'
+      });
+    }
+
+    if (action === 'complete') {
+      await withdrawal.complete(req.user._id);
+    } else if (action === 'fail') {
+      await withdrawal.fail(req.user._id, notes);
+    } else if (action === 'cancel') {
+      withdrawal.status = 'cancelled';
+      withdrawal.notes = notes;
+      withdrawal.processedBy = req.user._id;
+      withdrawal.processedAt = new Date();
+      await withdrawal.save();
+    }
+
+    res.json({
+      success: true,
+      data: { withdrawal },
+      message: `Withdrawal ${action}d successfully`
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Get withdrawal statistics
+ * @route   GET /api/admin/withdrawals/stats
+ * @access  Private (Admin only)
+ */
+export const getWithdrawalStats = async (req, res, next) => {
+  try {
+    // Get profit calculations
+    const [creditStats] = await CreditTransaction.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: '$price' },
+          totalCost: { $sum: '$cost' }
+        }
+      }
+    ]);
+
+    const totalProfit = (creditStats?.totalRevenue || 0) - (creditStats?.totalCost || 0);
+
+    // Get withdrawal statistics
+    const withdrawalStats = await Withdrawal.aggregate([
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 },
+          total: { $sum: '$amount' }
+        }
+      }
+    ]);
+
+    // Calculate available for withdrawal
+    const pendingWithdrawals = withdrawalStats.find(s => s._id === 'pending')?.total || 0;
+    const processingWithdrawals = withdrawalStats.find(s => s._id === 'processing')?.total || 0;
+    const totalWithdrawn = withdrawalStats.find(s => s._id === 'completed')?.total || 0;
+
+    const availableForWithdrawal = totalProfit - pendingWithdrawals - processingWithdrawals - totalWithdrawn;
+
+    res.json({
+      success: true,
+      data: {
+        totalProfit,
+        totalWithdrawn,
+        pendingWithdrawals,
+        processingWithdrawals,
+        availableForWithdrawal: Math.max(0, availableForWithdrawal),
+        withdrawalStats
+      },
+      message: 'Withdrawal stats retrieved successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * @desc    Toggle user active status
  * @route   PATCH /api/admin/companies/:id/toggle-active
  * @access  Private (Admin only)
@@ -572,5 +792,9 @@ export default {
   getAllTransactions,
   getAllSMSLogs,
   getAllCampaigns,
-  toggleUserActive
+  toggleUserActive,
+  requestWithdrawal,
+  getWithdrawals,
+  processWithdrawal,
+  getWithdrawalStats
 };
