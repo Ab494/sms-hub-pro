@@ -193,7 +193,7 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-                Why Choose <span className="text-[hsl(174,72%,46%)]">BulkSMS</span>?
+                Why Choose <span className="text-[hsl(174,72%,46%)]">TumaPrime SMS</span>?
               </h2>
               <p className="text-muted-foreground mb-8">
                 Built for businesses that need reliable, scalable messaging infrastructure.
