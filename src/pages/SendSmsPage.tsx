@@ -20,7 +20,7 @@ const MAX_CHARS = 160;
 export default function SendSmsPage() {
   const [message, setMessage] = useState("");
   const [phone, setPhone] = useState("");
-  const [selectedGroup, setSelectedGroup] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState("none");
   const [groups, setGroups] = useState<Group[]>([]);
   const [sendingMode, setSendingMode] = useState<"single" | "bulk">("single");
   const [loading, setLoading] = useState(false);
@@ -85,7 +85,8 @@ export default function SendSmsPage() {
   };
 
   const handleSendBulk = async () => {
-    if (!message || (!selectedGroup && !phone)) {
+    const hasGroupSelected = selectedGroup && selectedGroup !== "none";
+    if (!message || (!hasGroupSelected && !phone)) {
       toast({
         variant: "destructive",
         title: "Error",
@@ -104,18 +105,18 @@ export default function SendSmsPage() {
 
       const res = await smsAPI.sendBulk({
         message,
-        groupId: selectedGroup || undefined,
+        groupId: hasGroupSelected ? selectedGroup : undefined,
         phones: phones.length > 0 ? phones : undefined,
         name: `Bulk SMS - ${phones.length || 'Group'} recipients`
       });
-      
+
       toast({
         title: "Success",
         description: res.data.message || "SMS campaign queued"
       });
       setPhone("");
       setMessage("");
-      setSelectedGroup("");
+      setSelectedGroup("none");
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -178,13 +179,13 @@ export default function SendSmsPage() {
                   <SelectTrigger>
                     <SelectValue placeholder="Select a group (optional)" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">No group - use phone numbers above</SelectItem>
-                    {groups.map((group) => (
-                      <SelectItem key={group._id} value={group._id}>
-                        {group.name} ({group.contactCount} contacts)
-                      </SelectItem>
-                    ))}
+                   <SelectContent>
+                     <SelectItem value="none">No group - use phone numbers above</SelectItem>
+                     {groups.map((group) => (
+                       <SelectItem key={group._id} value={group._id}>
+                         {group.name} ({group.contactCount} contacts)
+                       </SelectItem>
+                     ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -205,10 +206,10 @@ export default function SendSmsPage() {
               </div>
             </div>
 
-            <Button 
-              className="w-full sm:w-auto gap-2" 
+            <Button
+              className="w-full sm:w-auto gap-2"
               onClick={sendingMode === "single" ? handleSendSingle : handleSendBulk}
-              disabled={loading || !message || (!phone && !selectedGroup)}
+              disabled={loading || !message || (sendingMode === "single" ? !phone : (!phone && selectedGroup === "none"))}
             >
               {loading ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
@@ -228,9 +229,9 @@ export default function SendSmsPage() {
             </h3>
             <div className="rounded-lg bg-secondary p-4 min-h-[120px]">
               <p className="text-xs text-muted-foreground mb-1">
-                {sendingMode === "single" 
-                  ? `To: ${phone || "—"}` 
-                  : selectedGroup 
+                {sendingMode === "single"
+                  ? `To: ${phone || "—"}`
+                  : selectedGroup && selectedGroup !== "none"
                     ? `To: Group (${groups.find(g => g._id === selectedGroup)?.name})`
                     : `To: ${phone.split(/[\n,]/).filter(Boolean).length || 0} numbers`
                 }
