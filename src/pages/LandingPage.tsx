@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import heroPerson1 from "@/assets/hero-person-1.png";
-import heroPerson2 from "@/assets/hero-person-2.png";
+import promo1 from "@/assets/promo-1.jpeg";
+import promo2 from "@/assets/promo-2.jpeg";
+import promo3 from "@/assets/promo-3.jpeg";
+import promo4 from "@/assets/promo-4.jpeg";
 import { useAuth } from "@/contexts/AuthContext";
 
 const services = [
