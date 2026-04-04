@@ -52,6 +52,40 @@ export default function SendSmsPage() {
   const charCount = message.length;
   const smsCount = Math.ceil(charCount / MAX_CHARS) || 1;
 
+  // Calculate cost display text
+  const getCostDisplay = () => {
+    if (sendingMode === "single") {
+      return (smsCount * 0.46).toFixed(2);
+    } else if (sendingMode === "bulk") {
+      if (selectedGroup && selectedGroup !== "none") {
+        return `${groups.find(g => g._id === selectedGroup)?.contactCount || 0} × ${smsCount} SMS`;
+      } else {
+        const phoneCount = phone.split(/[\n,]/).filter(Boolean).length || 0;
+        return `${phoneCount} × ${smsCount} SMS`;
+      }
+    } else if (sendingMode === "import") {
+      return `${importedContacts.length} × ${smsCount} SMS = ${(importedContacts.length * smsCount * 0.46).toFixed(2)}`;
+    }
+    return "0.00";
+  };
+
+  // Calculate actual cost for estimation
+  const getEstimatedCost = () => {
+    if (sendingMode === "single") {
+      return smsCount * 0.46;
+    } else if (sendingMode === "bulk") {
+      if (selectedGroup && selectedGroup !== "none") {
+        return (groups.find(g => g._id === selectedGroup)?.contactCount || 0) * smsCount * 0.46;
+      } else {
+        const phoneCount = phone.split(/[\n,]/).filter(Boolean).length || 0;
+        return phoneCount * smsCount * 0.46;
+      }
+    } else if (sendingMode === "import") {
+      return importedContacts.length * smsCount * 0.46;
+    }
+    return 0;
+  };
+
   const handleSendSingle = async () => {
     if (!phone || !message) {
       toast({
@@ -559,21 +593,15 @@ export default function SendSmsPage() {
                 Estimated cost: KES {
                   sendingMode === "single"
                     ? (smsCount * 0.46).toFixed(2)
-                    : sendingMode === "bulk"
-                      ? selectedGroup && selectedGroup !== "none"
-                        ? `${groups.find(g => g._id === selectedGroup)?.contactCount || 0} × ${smsCount} SMS`
-                        : `${phone.split(/[\n,]/).filter(Boolean).length || 0} × ${smsCount} SMS`
-                      : sendingMode === "import"
-                        ? `${importedContacts.length} × ${smsCount} SMS = ${(importedContacts.length * smsCount * 0.46).toFixed(2)}`
-                        : "0.00"
+                      : getCostDisplay()
                 }
               </p>
             </div>
           </div>
         </div>
             <div className="mt-4 space-y-1 text-xs text-muted-foreground">
-              <p>Rate: Kshs 0.46 per SMS</p>
-              <p>Estimated cost: Kshs {(smsCount * (sendingMode === "single" ? 1 : (phone.split(/[\n,]/).filter(Boolean).length || 1)) * 0.46).toFixed(2)}</p>
+              <p>Rate: KES 0.46 per SMS</p>
+              <p>Estimated cost: KES {getEstimatedCost().toFixed(2)}</p>
             </div>
           </div>
         </div>
