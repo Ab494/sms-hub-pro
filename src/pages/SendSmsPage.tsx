@@ -60,13 +60,17 @@ export default function SendSmsPage() {
       if (selectedGroup && selectedGroup !== "none") {
         return `${groups.find(g => g._id === selectedGroup)?.contactCount || 0} × ${smsCount} SMS`;
       } else {
-        const phoneCount = phone.split(/[\n,]/).filter(Boolean).length || 0;
-        return `${phoneCount} × ${smsCount} SMS`;
+        return `${getPhoneCount()} × ${smsCount} SMS`;
       }
     } else if (sendingMode === "import") {
       return `${importedContacts.length} × ${smsCount} SMS = ${(importedContacts.length * smsCount * 0.46).toFixed(2)}`;
     }
     return "0.00";
+  };
+
+  // Get phone count for bulk mode
+  const getPhoneCount = () => {
+    return phone.split(/[\n,]/).filter(Boolean).length || 0;
   };
 
   // Calculate actual cost for estimation
@@ -77,8 +81,7 @@ export default function SendSmsPage() {
       if (selectedGroup && selectedGroup !== "none") {
         return (groups.find(g => g._id === selectedGroup)?.contactCount || 0) * smsCount * 0.46;
       } else {
-        const phoneCount = phone.split(/[\n,]/).filter(Boolean).length || 0;
-        return phoneCount * smsCount * 0.46;
+        return getPhoneCount() * smsCount * 0.46;
       }
     } else if (sendingMode === "import") {
       return importedContacts.length * smsCount * 0.46;
@@ -579,7 +582,7 @@ export default function SendSmsPage() {
                   : sendingMode === "bulk"
                     ? selectedGroup && selectedGroup !== "none"
                       ? `To: Group (${groups.find(g => g._id === selectedGroup)?.name})`
-                      : `To: ${phone.split(/[\n,]/).filter(Boolean).length || 0} numbers`
+                      : `To: ${getPhoneCount()} numbers`
                     : sendingMode === "import"
                       ? `To: ${importedContacts.length} imported contacts`
                       : "—"
