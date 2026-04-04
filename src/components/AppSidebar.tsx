@@ -29,6 +29,7 @@ const menuItems = [
   { label: "Contact Groups", icon: FolderOpen, path: "/groups" },
   { label: "SMS Logs", icon: FileText, path: "/logs" },
   { label: "Reports", icon: BarChart3, path: "/reports" },
+  { label: "Credits", icon: CreditCard, path: "/credits" },
   { label: "Settings", icon: Settings, path: "/settings" },
 ];
 
