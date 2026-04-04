@@ -18,6 +18,9 @@ import smsRoutes from './routes/smsRoutes.js';
 import creditsRoutes from './routes/creditsRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 
+// Import middleware
+import { protect } from './middleware/authMiddleware.js';
+
 // Import database
 import connectDB from './config/db.js';
 
@@ -45,6 +48,7 @@ const corsOptions = {
       'http://127.0.0.1:5173',
       'http://127.0.0.1:8080',
       'http://127.0.0.1:8081',
+      'https://sms-hub-convex.onrender.com',
       'https://convex-sms.vercel.app'
     ];
     
@@ -147,20 +151,6 @@ app.get('/api/debug/sms', (req, res) => {
       hasSender: !!process.env.BLESSEDTEXTS_SENDER,
       defaultSenderId: process.env.DEFAULT_SENDER_ID,
       apiUrl: 'https://sms.blessedtexts.com/api/sms/v1'
-    }
-  });
-});
-
-// Test SMS endpoint (requires auth)
-app.post('/api/test/sms', protect, (req, res) => {
-  const { phone, message } = req.body;
-  
-  res.json({
-    success: true,
-    received: { phone, message },
-    user: req.user ? { id: req.user._id, email: req.user.email } : null,
-    config: {
-      hasApiKey: !!process.env.BLESSEDTEXTS_API_KEY
     }
   });
 });
