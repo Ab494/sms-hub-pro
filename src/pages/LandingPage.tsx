@@ -273,7 +273,7 @@ export default function LandingPage() {
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[hsl(174,72%,46%)]">
                   <MessageSquare className="h-4 w-4 text-[hsl(0,0%,100%)]" />
                 </div>
-                <span className="text-lg font-bold text-foreground">BulkSMS</span>
+                <span className="text-lg font-bold text-foreground">TumaPrime SMS</span>
               </div>
               <p className="text-sm text-muted-foreground">Empowering business communication across Africa and beyond.</p>
             </div>
