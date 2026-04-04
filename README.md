@@ -12,7 +12,7 @@ A comprehensive bulk SMS management platform built with modern web technologies.
 - **Reports & Logs**: Monitor SMS delivery and campaign performance
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
 
-## Tech Stack
+## Tech Stacks
 
 ### Frontend
 - **React 18** with TypeScript
