@@ -175,6 +175,24 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
+      {/* Promo Gallery */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Trusted Across Kenya</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Fixed rate of only Kshs 0.46 per SMS — cross-network delivery, no monthly charges, no setup fee.</p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[promo1, promo2, promo3, promo4].map((img, i) => (
+              <div key={i} className="rounded-2xl overflow-hidden shadow-lg border border-border hover:shadow-xl transition-shadow duration-300 hover:-translate-y-1">
+                <img src={img} alt={`TumaPrime SMS promo ${i + 1}`} className="w-full h-64 object-cover" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
