@@ -8,8 +8,11 @@ import PlatformSettings from '../models/PlatformSettings.js';
 
 const BLESSEDTEXTS_API_KEY = process.env.BLESSEDTEXTS_API_KEY;
 const BLESSEDTEXTS_SENDER = process.env.BLESSEDTEXTS_SENDER || 'INFO';
+const TEST_MODE = process.env.BLESSEDTEXTS_TEST_MODE === 'true';
 
-const API_BASE_URL = 'https://sms.blessedtexts.com/api/sms/v1';
+const API_BASE_URL = TEST_MODE
+  ? 'https://test.blessedtexts.com/api/sms/v1'  // Test/sandbox API URL
+  : 'https://sms.blessedtexts.com/api/sms/v1';  // Production API URL
 const SMS_WEBHOOK_URL = process.env.SMS_WEBHOOK_URL || `${process.env.CLIENT_URL || 'http://localhost:5000'}/api/sms/webhook`;
 
 // Console logging removed for production
@@ -23,7 +26,7 @@ const SMS_WEBHOOK_URL = process.env.SMS_WEBHOOK_URL || `${process.env.CLIENT_URL
  */
 export const sendSMS = async (phone, message, senderId = 'INFO') => {
   try {
-    console.log('Sending SMS:', { phone, messageLength: message.length, senderId });
+    console.log(`${TEST_MODE ? '[TEST MODE]' : ''} Sending SMS:`, { phone, messageLength: message.length, senderId });
 
     // Validate API key
     if (!BLESSEDTEXTS_API_KEY) {
@@ -33,6 +36,11 @@ export const sendSMS = async (phone, message, senderId = 'INFO') => {
         error: 'SMS service not configured. Please contact administrator.',
         code: 500
       };
+    }
+
+    // In test mode, add test indicator
+    if (TEST_MODE) {
+      console.log('[TEST MODE] Using BlessedTexts test environment');
     }
 
     // Format phone number - BlessedTexts expects formats like 254722XXXXXX or 0722XXXXXX
@@ -65,7 +73,8 @@ export const sendSMS = async (phone, message, senderId = 'INFO') => {
       success: true,
       data: response.data,
       messageId: response.data[0]?.message_id,
-      status: response.data[0]?.status_desc || 'sent'
+      status: response.data[0]?.status_desc || 'sent',
+      testMode: TEST_MODE
     };
   } catch (error) {
     console.error('BlessedTexts SMS Error:', error.message);
@@ -100,8 +109,18 @@ export const sendSMS = async (phone, message, senderId = 'INFO') => {
  */
 export const sendBulkSMS = async (phones, message, senderId = 'INFO') => {
   try {
+    console.log(`${TEST_MODE ? '[TEST MODE]' : ''} Sending bulk SMS:`, {
+      phoneCount: phones.length,
+      messageLength: message.length,
+      senderId
+    });
+
     if (!BLESSEDTEXTS_API_KEY) {
       throw new Error('BlessedTexts API key not configured');
+    }
+
+    if (TEST_MODE) {
+      console.log('[TEST MODE] Using BlessedTexts test environment for bulk SMS');
     }
 
     // Format all phone numbers
@@ -130,7 +149,8 @@ export const sendBulkSMS = async (phones, message, senderId = 'INFO') => {
     return {
       success: true,
       data: response.data,
-      status: response.data?.status || 'queued'
+      status: response.data?.status || 'queued',
+      testMode: TEST_MODE
     };
   } catch (error) {
     console.error('BlessedText Bulk SMS Error:', error.message);

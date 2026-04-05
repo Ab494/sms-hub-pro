@@ -144,13 +144,15 @@ app.get('/api/health', (req, res) => {
 
 // Debug endpoint for SMS configuration
 app.get('/api/debug/sms', (req, res) => {
+  const testMode = process.env.BLESSEDTEXTS_TEST_MODE === 'true';
   res.json({
     success: true,
     config: {
       hasApiKey: !!process.env.BLESSEDTEXTS_API_KEY,
       hasSender: !!process.env.BLESSEDTEXTS_SENDER,
       defaultSenderId: process.env.DEFAULT_SENDER_ID,
-      apiUrl: 'https://sms.blessedtexts.com/api/sms/v1',
+      apiUrl: testMode ? 'https://test.blessedtexts.com/api/sms/v1' : 'https://sms.blessedtexts.com/api/sms/v1',
+      testMode: testMode,
       nodeEnv: process.env.NODE_ENV,
       clientUrl: process.env.CLIENT_URL
     }
