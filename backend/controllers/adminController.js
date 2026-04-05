@@ -232,6 +232,7 @@ export const getPlatformStats = async (req, res, next) => {
       totalSMS,
       totalCampaigns,
       creditStats,
+      withdrawalStats,
       recentTransactions
     ] = await Promise.all([
       User.countDocuments({ role: 'user' }),
@@ -246,6 +247,15 @@ export const getPlatformStats = async (req, res, next) => {
             totalUsed: { $sum: { $cond: [{ $eq: ['$type', 'usage'] }, { $abs: '$amount' }, 0] } },
             totalRevenue: { $sum: '$price' },
             totalCost: { $sum: '$cost' }
+          }
+        }
+      ]),
+      Withdrawal.aggregate([
+        {
+          $group: {
+            _id: '$status',
+            count: { $sum: 1 },
+            total: { $sum: '$amount' }
           }
         }
       ]),
@@ -269,6 +279,13 @@ export const getPlatformStats = async (req, res, next) => {
       }
     ]);
 
+    // Calculate withdrawal statistics
+    const pendingWithdrawals = withdrawalStats.find(s => s._id === 'pending')?.total || 0;
+    const processingWithdrawals = withdrawalStats.find(s => s._id === 'processing')?.total || 0;
+    const totalWithdrawn = withdrawalStats.find(s => s._id === 'completed')?.total || 0;
+    const totalRevenue = creditStats[0]?.totalRevenue || 0;
+    const availableForWithdrawal = totalRevenue - pendingWithdrawals - processingWithdrawals - totalWithdrawn;
+
     res.json({
       success: true,
       data: {
@@ -284,6 +301,12 @@ export const getPlatformStats = async (req, res, next) => {
           totalRevenue: creditStats[0]?.totalRevenue || 0,
           totalCost: creditStats[0]?.totalCost || 0,
           profit: (creditStats[0]?.totalRevenue || 0) - (creditStats[0]?.totalCost || 0)
+        },
+        withdrawals: {
+          totalWithdrawn,
+          pendingWithdrawals,
+          processingWithdrawals,
+          availableForWithdrawal: Math.max(0, availableForWithdrawal)
         },
         today: {
           sent: todayStats.find(s => s._id === 'sent')?.count || 0,

@@ -168,7 +168,7 @@ export default function AdminDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
-              KES {(stats?.credits.profit - (stats?.withdrawals?.totalWithdrawn || 0))?.toLocaleString() || 0}
+              KES {(stats?.withdrawals?.availableForWithdrawal || 0)?.toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground">
               <span className="text-blue-600">KES {(stats?.withdrawals?.totalWithdrawn || 0).toLocaleString()} withdrawn</span>
