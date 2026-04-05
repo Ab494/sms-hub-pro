@@ -70,7 +70,6 @@ platformSettingsSchema.statics.getDefaultSenderId = async function() {
   const setting = await this.findOne({ key: 'default_sender_id' });
   return setting?.value || 'INFO';
 };
-};
 
 // Static method to initialize default settings
 platformSettingsSchema.statics.initializeDefaults = async function() {
