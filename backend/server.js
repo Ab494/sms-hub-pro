@@ -322,6 +322,271 @@ app.post('/api/admin/update-sms-cost', async (req, res) => {
   }
 });
 
+// ============================================================================
+// PUBLIC API ENDPOINTS (for external company integration)
+// ============================================================================
+
+// Middleware to authenticate external API clients
+const authenticateApiClient = async (req, res, next) => {
+  try {
+    const apiKey = req.headers['x-api-key'] || req.headers['authorization']?.replace('Bearer ', '');
+
+    if (!apiKey) {
+      return res.status(401).json({
+        success: false,
+        error: 'API key required',
+        message: 'Please provide X-API-Key header or Authorization Bearer token'
+      });
+    }
+
+    // For now, we'll use a simple API key check
+    // In production, this should check against a database of API clients
+    const validApiKeys = process.env.VALID_API_KEYS?.split(',') || [];
+    const isValidKey = validApiKeys.includes(apiKey);
+
+    if (!isValidKey) {
+      return res.status(403).json({
+        success: false,
+        error: 'Invalid API key',
+        message: 'The provided API key is not valid'
+      });
+    }
+
+    // Mock client info - in production this would come from database
+    req.apiClient = {
+      id: 'client_' + apiKey.substring(0, 8),
+      name: 'External Client',
+      apiKey: apiKey,
+      credits: 1000, // Mock credits
+      rateLimit: 100 // SMS per hour
+    };
+
+    next();
+  } catch (error) {
+    console.error('API Client authentication error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Authentication failed',
+      message: 'Internal server error during authentication'
+    });
+  }
+};
+
+// Public API: Send SMS
+app.post('/api/v1/sms/send', authenticateApiClient, async (req, res) => {
+  try {
+    const { to: phone, message, from: senderId, webhook_url } = req.body;
+
+    // Validate required fields
+    if (!phone || !message) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields',
+        message: 'Both "to" (phone) and "message" fields are required'
+      });
+    }
+
+    // Check client credits (mock implementation)
+    if (req.apiClient.credits < 1) {
+      return res.status(402).json({
+        success: false,
+        error: 'Insufficient credits',
+        message: 'Your account has insufficient credits to send SMS'
+      });
+    }
+
+    // Use existing SMS controller logic
+    const { sendSMS } = await import('./controllers/smsController.js');
+    const mockReq = {
+      body: { phone, message, senderId },
+      user: { _id: req.apiClient.id, role: 'api_client' },
+      apiClient: req.apiClient
+    };
+
+    const mockRes = {
+      status: (code) => ({ json: (data) => ({ status: code, data }) }),
+      json: (data) => data
+    };
+
+    const result = await sendSMS(mockReq, mockRes, (err) => {
+      throw err;
+    });
+
+    if (result.success !== false) {
+      // Deduct credits (mock)
+      req.apiClient.credits -= 1;
+
+      res.json({
+        success: true,
+        message: 'SMS sent successfully',
+        data: {
+          message_id: result.messageId || `msg_${Date.now()}`,
+          status: 'sent',
+          to: phone,
+          from: senderId || 'TUMAPRIME',
+          credits_used: 1,
+          remaining_credits: req.apiClient.credits
+        }
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        error: 'SMS sending failed',
+        message: result.message || 'Failed to send SMS'
+      });
+    }
+
+  } catch (error) {
+    console.error('Public API SMS send error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: 'Failed to process SMS request'
+    });
+  }
+});
+
+// Public API: Send Bulk SMS
+app.post('/api/v1/sms/bulk', authenticateApiClient, async (req, res) => {
+  try {
+    const { to: phones, message, from: senderId, webhook_url } = req.body;
+
+    if (!phones || !message) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields',
+        message: 'Both "to" (phones array) and "message" fields are required'
+      });
+    }
+
+    const phoneArray = Array.isArray(phones) ? phones : [phones];
+    const totalCost = phoneArray.length;
+
+    // Check credits
+    if (req.apiClient.credits < totalCost) {
+      return res.status(402).json({
+        success: false,
+        error: 'Insufficient credits',
+        message: `Insufficient credits. Need ${totalCost}, have ${req.apiClient.credits}`
+      });
+    }
+
+    // Use existing bulk SMS logic
+    const { sendBulkSMS } = await import('./controllers/smsController.js');
+    const mockReq = {
+      body: { phones: phoneArray, message, senderId, name: 'API Bulk SMS' },
+      user: { _id: req.apiClient.id, role: 'api_client' },
+      apiClient: req.apiClient
+    };
+
+    const mockRes = {
+      status: (code) => ({ json: (data) => ({ status: code, data }) }),
+      json: (data) => data
+    };
+
+    const result = await sendBulkSMS(mockReq, mockRes, (err) => {
+      throw err;
+    });
+
+    if (result.success !== false) {
+      req.apiClient.credits -= totalCost;
+
+      res.json({
+        success: true,
+        message: 'Bulk SMS queued successfully',
+        data: {
+          campaign_id: `campaign_${Date.now()}`,
+          recipient_count: phoneArray.length,
+          status: 'queued',
+          credits_used: totalCost,
+          remaining_credits: req.apiClient.credits
+        }
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        error: 'Bulk SMS failed',
+        message: result.message || 'Failed to queue bulk SMS'
+      });
+    }
+
+  } catch (error) {
+    console.error('Public API bulk SMS error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: 'Failed to process bulk SMS request'
+    });
+  }
+});
+
+// Public API: Get Account Balance
+app.get('/api/v1/account/balance', authenticateApiClient, (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      credits: req.apiClient.credits,
+      sms_rate: 1, // credits per SMS
+      currency: 'KES'
+    }
+  });
+});
+
+// Public API: Get Message Status
+app.get('/api/v1/sms/:messageId', authenticateApiClient, async (req, res) => {
+  try {
+    const { messageId } = req.params;
+
+    // Query SMS log
+    const SMSLog = (await import('./models/SMSLog.js')).default;
+    const smsLog = await SMSLog.findOne({
+      $or: [
+        { apiMessageId: messageId },
+        { _id: messageId }
+      ]
+    });
+
+    if (!smsLog) {
+      return res.status(404).json({
+        success: false,
+        error: 'Message not found',
+        message: 'The specified message ID was not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        message_id: smsLog.apiMessageId || smsLog._id,
+        status: smsLog.status,
+        phone: smsLog.phone,
+        sent_at: smsLog.sentAt,
+        delivered_at: smsLog.deliveredAt,
+        cost: smsLog.cost
+      }
+    });
+
+  } catch (error) {
+    console.error('Public API message status error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: 'Failed to retrieve message status'
+    });
+  }
+});
+
+// Public API: Health Check
+app.get('/api/v1/health', (req, res) => {
+  res.json({
+    success: true,
+    service: 'TumaPrime SMS API',
+    version: '1.0.0',
+    status: 'operational',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // 404 handler for API routes only (frontend is served separately on Vercel)
 app.use('/api/*', (req, res) => {
   res.status(404).json({
@@ -408,6 +673,7 @@ app.listen(PORT, () => {
 ║   - Contacts: /api/contacts/*                     ║
 ║   - Groups:   /api/groups/*                       ║
 ║   - SMS:      /api/sms/*                          ║
+║   - Public API: /api/v1/*                        ║
 ║   - Health:   /api/health                         ║
 ║                                                   ║
 ╚═══════════════════════════════════════════════════╝
