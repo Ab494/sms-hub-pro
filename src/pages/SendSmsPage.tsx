@@ -70,7 +70,16 @@ export default function SendSmsPage() {
 
   // Get phone count for bulk mode
   const getPhoneCount = () => {
-    return phone.split(/[\n,]/).filter(Boolean).length || 0;
+    if (!phone) return 0;
+    const lines = phone.split('\n');
+    let count = 0;
+    for (const line of lines) {
+      const numbers = line.split(',');
+      for (const num of numbers) {
+        if (num.trim() !== '') count++;
+      }
+    }
+    return count;
   };
 
   // Calculate actual cost for estimation
@@ -99,10 +108,22 @@ export default function SendSmsPage() {
       return;
     }
 
-    // Validate phone number format
-    const phoneRegex = /^(\+?254|0)?[17]\d{8}$/;
-    const cleanPhone = phone.replace(/\s+/g, '');
-    if (!phoneRegex.test(cleanPhone)) {
+    // Validate phone number format - Kenyan numbers only
+    let cleanPhone = phone.split(' ').join('');
+    const startsWithValidPrefix = cleanPhone.startsWith('+254') || cleanPhone.startsWith('254') || cleanPhone.startsWith('0');
+    const hasValidLength = cleanPhone.length >= 9 && cleanPhone.length <= 13;
+    let digitsOnly = cleanPhone;
+    if (digitsOnly.startsWith('+254')) {
+      digitsOnly = digitsOnly.slice(4);
+    } else if (digitsOnly.startsWith('254')) {
+      digitsOnly = digitsOnly.slice(3);
+    } else if (digitsOnly.startsWith('0')) {
+      digitsOnly = digitsOnly.slice(1);
+    }
+    const hasValidDigits = digitsOnly.length > 0 && !isNaN(Number(digitsOnly));
+    const startsWithValidDigit = digitsOnly.startsWith('7') || digitsOnly.startsWith('1');
+    const isValidKenyaNumber = startsWithValidPrefix && hasValidLength && hasValidDigits && startsWithValidDigit;
+    if (!isValidKenyaNumber) {
       toast({
         variant: "destructive",
         title: "Error",
@@ -147,7 +168,14 @@ export default function SendSmsPage() {
       // If phone numbers are provided, split them
       let phones: string[] = [];
       if (phone) {
-        phones = phone.split(/[\n,]/).map(p => p.trim()).filter(Boolean);
+        const lines = phone.split('\n');
+        for (const line of lines) {
+          const numbers = line.split(',');
+          for (const num of numbers) {
+            const trimmed = num.trim();
+            if (trimmed !== '') phones.push(trimmed);
+          }
+        }
       }
 
       const res = await smsAPI.sendBulk({
@@ -280,7 +308,7 @@ export default function SendSmsPage() {
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="lg:col-span-3 space-y-5">
           <Tabs value={sendingMode} onValueChange={(value) => setSendingMode(value as "single" | "bulk" | "import")}>
-            <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="single" className="flex items-center gap-2">
                 <MessageSquare className="h-4 w-4" />
                 Single SMS
@@ -296,87 +324,60 @@ export default function SendSmsPage() {
             </TabsList>
 
             {/* Single SMS Tab */}
-            <TabsContent value="single" className="space-y-5">
+            <TabsContent value="single" className="space-y-4">
               <Card>
                 <CardHeader>
                   <CardTitle>Send Single SMS</CardTitle>
-                  <CardDescription>Send a message to one recipient</CardDescription>
+                  <CardDescription>Send an SMS to one recipient</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-5">
-                  {/* Phone Input */}
-                  <div className="space-y-2">
+                <CardContent className="space-y-4">
+                  <div>
                     <Label htmlFor="single-phone">Phone Number</Label>
                     <Input
                       id="single-phone"
-                      placeholder="+254 7XX XXX XXX"
+                      placeholder="0712345678 or +254712345678"
                       value={phone}
-                      onChange={e => setPhone(e.target.value)}
+                      onChange={(e) => setPhone(e.target.value)}
                     />
                   </div>
-
-                  {/* Message Input */}
-                  <div className="space-y-2">
-                    <Label>Message</Label>
+                  <div>
+                    <Label htmlFor="single-message">Message</Label>
                     <Textarea
-                      placeholder="Type your message here..."
-                      rows={5}
+                      id="single-message"
+                      placeholder="Enter your message..."
                       value={message}
-                      onChange={e => setMessage(e.target.value)}
+                      onChange={(e) => setMessage(e.target.value)}
+                      rows={4}
                     />
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>{charCount} / {MAX_CHARS} characters</span>
-                      <span>{smsCount} SMS</span>
+                    <div className="flex justify-between text-sm text-muted-foreground mt-1">
+                      <span>{charCount}/{MAX_CHARS} characters</span>
+                      <span>{smsCount} SMS ({(smsCount * 0.46).toFixed(2)} KES)</span>
                     </div>
                   </div>
-
-                  <Button
-                    className="w-full sm:w-auto gap-2"
-                    onClick={handleSendSingle}
-                    disabled={loading || !message || !phone}
-                  >
-                    {loading ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    ) : (
-                      <Send className="h-4 w-4" />
-                    )}
-                    Send SMS
+                  <Button onClick={handleSendSingle} disabled={loading} className="w-full">
+                    <Send className="h-4 w-4 mr-2" />
+                    {loading ? "Sending..." : "Send SMS"}
                   </Button>
                 </CardContent>
               </Card>
             </TabsContent>
 
             {/* Bulk SMS Tab */}
-            <TabsContent value="bulk" className="space-y-5">
+            <TabsContent value="bulk" className="space-y-4">
               <Card>
                 <CardHeader>
                   <CardTitle>Send Bulk SMS</CardTitle>
-                  <CardDescription>Send messages to multiple recipients or groups</CardDescription>
+                  <CardDescription>Send SMS to multiple recipients or groups</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-5">
-                  {/* Phone Input */}
-                  <div className="space-y-2">
-                    <Label htmlFor="bulk-phone">Phone Numbers (optional)</Label>
-                    <Textarea
-                      id="bulk-phone"
-                      placeholder="0712345678,0712345679,0712345680"
-                      rows={3}
-                      value={phone}
-                      onChange={e => setPhone(e.target.value)}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Enter phone numbers separated by commas, or select a group below
-                    </p>
-                  </div>
-
-                  {/* Group Selection */}
-                  <div className="space-y-2">
-                    <Label>Contact Group</Label>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label>Select Recipients</Label>
                     <Select value={selectedGroup} onValueChange={setSelectedGroup}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a group (optional)" />
+                        <SelectValue placeholder="Choose a group or enter phone numbers below" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="none">No group - use phone numbers above</SelectItem>
+                        <SelectItem value="none">Enter phone numbers manually</SelectItem>
                         {groups.map((group) => (
                           <SelectItem key={group._id} value={group._id}>
                             {group.name} ({group.contactCount} contacts)
@@ -386,252 +387,187 @@ export default function SendSmsPage() {
                     </Select>
                   </div>
 
-                  {/* Message Input */}
-                  <div className="space-y-2">
-                    <Label>Message</Label>
+                  {selectedGroup === "none" && (
+                    <div>
+                      <Label htmlFor="bulk-phones">Phone Numbers</Label>
+                      <Textarea
+                        id="bulk-phones"
+                        placeholder="Enter phone numbers (one per line or comma-separated)&#10;0712345678&#10;0723456789,0734567890"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        rows={4}
+                      />
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {getPhoneCount()} phone numbers detected
+                      </p>
+                    </div>
+                  )}
+
+                  <div>
+                    <Label htmlFor="bulk-message">Message</Label>
                     <Textarea
-                      placeholder="Type your message here..."
-                      rows={5}
+                      id="bulk-message"
+                      placeholder="Enter your message..."
                       value={message}
-                      onChange={e => setMessage(e.target.value)}
+                      onChange={(e) => setMessage(e.target.value)}
+                      rows={4}
                     />
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>{charCount} / {MAX_CHARS} characters</span>
-                      <span>{smsCount} SMS</span>
+                    <div className="flex justify-between text-sm text-muted-foreground mt-1">
+                      <span>{charCount}/{MAX_CHARS} characters</span>
+                      <span>{getCostDisplay()}</span>
                     </div>
                   </div>
-
-                  <Button
-                    className="w-full sm:w-auto gap-2"
-                    onClick={handleSendBulk}
-                    disabled={loading || !message || (!phone && selectedGroup === "none")}
-                  >
-                    {loading ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    ) : (
-                      <Send className="h-4 w-4" />
-                    )}
-                    Send Bulk SMS
+                  <Button onClick={handleSendBulk} disabled={loading} className="w-full">
+                    <Send className="h-4 w-4 mr-2" />
+                    {loading ? "Sending..." : "Send Bulk SMS"}
                   </Button>
                 </CardContent>
               </Card>
             </TabsContent>
 
-            {/* Import File Tab */}
-            <TabsContent value="import" className="space-y-5">
+            {/* Import CSV/Excel Tab */}
+            <TabsContent value="import" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Import from File</CardTitle>
-                  <CardDescription>Upload a CSV or Excel file to send SMS to multiple contacts</CardDescription>
+                  <CardTitle>Import from CSV/Excel</CardTitle>
+                  <CardDescription>Upload a file to send SMS to multiple contacts</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-5">
+                <CardContent className="space-y-4">
+                  {/* Download Sample File */}
+                  <div className="bg-muted/50 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Download className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium">Download Sample File</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Download a sample CSV file to see the correct format for your contacts.
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open('/sample-contacts.csv', '_blank')}
+                    >
+                      <FileSpreadsheet className="h-4 w-4 mr-2" />
+                      Download Sample CSV
+                    </Button>
+                  </div>
+
                   {/* File Upload */}
-                  <div className="space-y-2">
-                    <Label>Upload File</Label>
-                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
-                      <input
+                  <div>
+                    <Label htmlFor="file-upload">Upload File</Label>
+                    <div className="mt-1">
+                      <Input
+                        id="file-upload"
                         type="file"
                         accept=".csv,.xlsx,.xls"
                         onChange={handleFileUpload}
-                        className="hidden"
-                        id="file-upload"
+                        className="cursor-pointer"
                       />
-                      <label htmlFor="file-upload" className="cursor-pointer">
-                        <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground">
-                          Click to upload or drag and drop
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          CSV or Excel files (.csv, .xlsx, .xls)
-                        </p>
-                      </label>
                     </div>
-
-                    {uploadedFile && (
-                      <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-                        {uploadedFile.name.endsWith('.csv') ? (
-                          <FileText className="h-4 w-4" />
-                        ) : (
-                          <FileSpreadsheet className="h-4 w-4" />
-                        )}
-                        <span className="text-sm">{uploadedFile.name}</span>
-                      </div>
-                    )}
-
-                    {importPreview && (
-                      <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                        <p className="text-sm text-green-700">{importPreview}</p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Expected Format Info */}
-                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <h4 className="text-sm font-medium text-blue-900 mb-2">Expected File Format</h4>
-                    <p className="text-xs text-blue-700 mb-2">
-                      Your file should have columns for contact information. The system will automatically detect phone numbers.
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Supported formats: CSV, Excel (.xlsx, .xls)
                     </p>
-                    <div className="text-xs text-blue-700 mb-3">
-                      <strong>Supported columns:</strong> phone, telephone, mobile, contact, number<br/>
-                      <strong>Example:</strong> name, phone → John Doe, +254712345678
-                    </div>
-                    <div className="flex gap-3">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          // Download sample CSV
-                          const csvContent = "name,phone,email,company\nJohn Kamau,+254712345678,john.kamau@email.com,Kamau Enterprises\nMary Wanjiku,0712345679,mary.wanjiku@email.com,Wanjiku Solutions\nDavid Kiprop,7123456780,david.kiprop@email.com,Kiprop Tech\nSarah Achieng,+254723456781,sarah.achieng@email.com,Achieng Consulting\n";
-                          const blob = new Blob([csvContent], { type: 'text/csv' });
-                          const url = window.URL.createObjectURL(blob);
-                          const a = document.createElement('a');
-                          a.href = url;
-                          a.download = 'sample-contacts.csv';
-                          a.click();
-                          window.URL.revokeObjectURL(url);
-                        }}
-                        className="flex items-center gap-2"
-                      >
-                        <Download className="h-3 w-3" />
-                        Download Sample CSV
-                      </Button>
-                      <div className="text-xs text-blue-600 self-center">
-                        Contains 10 sample contacts
+                  </div>
+
+                  {/* Import Preview */}
+                  {importPreview && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-green-600" />
+                        <span className="text-sm font-medium text-green-900">Import Preview</span>
                       </div>
+                      <p className="text-sm text-green-800 mt-1">{importPreview}</p>
                     </div>
-                  </div>
+                  )}
 
-                  {/* Message Input */}
-                  <div className="space-y-2">
-                    <Label>Message</Label>
-                    <Textarea
-                      placeholder="Type your message here..."
-                      rows={5}
-                      value={message}
-                      onChange={e => setMessage(e.target.value)}
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>{charCount} / {MAX_CHARS} characters</span>
-                      <span>{smsCount} SMS per contact</span>
-                    </div>
-                  </div>
-
-                  {importedContacts.length > 0 && (
-                    <div className="p-3 bg-muted rounded-lg">
-                      <p className="text-sm">
-                        <strong>{importedContacts.length}</strong> contacts ready to receive SMS
-                        {importedContacts.length > 0 && ` (estimated cost: KES ${(importedContacts.length * smsCount * 0.46).toFixed(2)})`}
+                  {/* Error State */}
+                  {uploadedFile && importedContacts.length === 0 && !importPreview.includes("Found") && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className="h-4 w-4 text-red-600" />
+                        <span className="text-sm font-medium text-red-900">Import Failed</span>
+                      </div>
+                      <p className="text-sm text-red-800 mt-1">
+                        No valid phone numbers found in the file. Please check the format and try again.
                       </p>
                     </div>
                   )}
 
+                  <div>
+                    <Label htmlFor="import-message">Message</Label>
+                    <Textarea
+                      id="import-message"
+                      placeholder="Enter your message..."
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      rows={4}
+                    />
+                    <div className="flex justify-between text-sm text-muted-foreground mt-1">
+                      <span>{charCount}/{MAX_CHARS} characters</span>
+                      <span>{getCostDisplay()}</span>
+                    </div>
+                  </div>
                   <Button
-                    className="w-full sm:w-auto gap-2"
                     onClick={handleSendImport}
-                    disabled={loading || !message || importedContacts.length === 0}
+                    disabled={loading || importedContacts.length === 0}
+                    className="w-full"
                   >
-                    {loading ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    ) : (
-                      <Send className="h-4 w-4" />
-                    )}
-                    Send to {importedContacts.length} Contacts
+                    <Upload className="h-4 w-4 mr-2" />
+                    {loading ? "Sending..." : "Send to Imported Contacts"}
                   </Button>
                 </CardContent>
               </Card>
             </TabsContent>
           </Tabs>
-
-
-
-            {/* Group Selection (Bulk only) */}
-            {sendingMode === "bulk" && (
-              <div className="space-y-2">
-                <Label>Contact Group</Label>
-                <Select value={selectedGroup} onValueChange={setSelectedGroup}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a group (optional)" />
-                  </SelectTrigger>
-                   <SelectContent>
-                     <SelectItem value="none">No group - use phone numbers above</SelectItem>
-                     {groups.map((group) => (
-                       <SelectItem key={group._id} value={group._id}>
-                         {group.name} ({group.contactCount} contacts)
-                       </SelectItem>
-                     ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {/* Message Input */}
-            <div className="space-y-2">
-              <Label>Message</Label>
-              <Textarea
-                placeholder="Type your message here..."
-                rows={5}
-                value={message}
-                onChange={e => setMessage(e.target.value)}
-              />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>{charCount} / {MAX_CHARS} characters</span>
-                <span>{smsCount} SMS</span>
-              </div>
-            </div>
-
-            <Button
-              className="w-full sm:w-auto gap-2"
-              onClick={sendingMode === "single" ? handleSendSingle : handleSendBulk}
-              disabled={loading || !message || (sendingMode === "single" ? !phone : (!phone && selectedGroup === "none"))}
-            >
-              {loading ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-              {loading ? "Sending..." : "Send Message"}
-            </Button>
-          </div>
         </div>
 
-        {/* SMS Preview */}
-        <div className="lg:col-span-2">
-          <div className="rounded-xl border border-border bg-card p-6 shadow-card">
-            <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-              <MessageSquare className="h-4 w-4" /> SMS Preview
-            </h3>
-            <div className="rounded-lg bg-secondary p-4 min-h-[120px]">
-              <p className="text-xs text-muted-foreground mb-1">
-                {sendingMode === "single"
-                  ? `To: ${phone || "—"}`
-                  : sendingMode === "bulk"
-                    ? selectedGroup && selectedGroup !== "none"
-                      ? `To: Group (${groups.find(g => g._id === selectedGroup)?.name})`
-                      : `To: ${getPhoneCount()} numbers`
-                    : sendingMode === "import"
-                      ? `To: ${importedContacts.length} imported contacts`
-                      : "—"
-                }
-              </p>
-              <p className="text-sm whitespace-pre-wrap">{message || "Your message will appear here..."}</p>
-            </div>
-            <div className="mt-4 space-y-1 text-xs text-muted-foreground">
-              <p>Rate: KES 0.46 per SMS</p>
-              <p>
-                Estimated cost: KES {
-                  sendingMode === "single"
-                    ? (smsCount * 0.46).toFixed(2)
-                      : getCostDisplay()
-                }
-              </p>
-            </div>
-          </div>
-        </div>
-            <div className="mt-4 space-y-1 text-xs text-muted-foreground">
-              <p>Rate: KES 0.46 per SMS</p>
-              <p>Estimated cost: KES {getEstimatedCost().toFixed(2)}</p>
-            </div>
-          </div>
+        {/* Sidebar */}
+        <div className="lg:col-span-2 space-y-5">
+          <Card>
+            <CardHeader>
+              <CardTitle>SMS Cost Calculator</CardTitle>
+              <CardDescription>Estimate the cost of your SMS campaign</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-sm">Recipients:</span>
+                  <span className="text-sm font-medium">
+                    {sendingMode === "single" ? "1" :
+                     sendingMode === "bulk" ? (selectedGroup && selectedGroup !== "none" ? (groups.find(g => g._id === selectedGroup)?.contactCount || 0) : getPhoneCount()) :
+                     importedContacts.length}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm">SMS Count:</span>
+                  <span className="text-sm font-medium">{smsCount}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm">Cost per SMS:</span>
+                  <span className="text-sm font-medium">0.46 KES</span>
+                </div>
+                <div className="border-t pt-2">
+                  <div className="flex justify-between font-semibold">
+                    <span>Total Cost:</span>
+                    <span>{getEstimatedCost().toFixed(2)} KES</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Tips</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm text-muted-foreground">
+              <p>• SMS messages are limited to 160 characters per SMS.</p>
+              <p>• Phone numbers should be in Kenyan format (0712345678 or +254712345678).</p>
+              <p>• Bulk SMS to groups is more efficient than manual entry.</p>
+              <p>• CSV files should have columns named 'name' and 'phone'.</p>
+              <p>• Invalid phone numbers will be skipped automatically.</p>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
