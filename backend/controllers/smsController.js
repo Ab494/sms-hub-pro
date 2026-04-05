@@ -9,6 +9,91 @@ import csv from 'csv-parser';
 import * as XLSX from 'xlsx';
 
 /**
+ * @desc    Handle SMS delivery webhook from BlessedTexts
+ * @route   POST /api/sms/webhook
+ * @access  Public (SMS provider webhook)
+ */
+export const smsWebhook = async (req, res, next) => {
+  try {
+    const webhookData = req.body;
+    console.log('SMS Webhook received:', webhookData);
+
+    // Handle different webhook formats
+    let messageId, status, timestamp;
+
+    // BlessedTexts webhook format (based on common patterns)
+    if (webhookData.message_id) {
+      messageId = webhookData.message_id;
+      status = webhookData.status?.toLowerCase();
+      timestamp = webhookData.timestamp || new Date();
+    } else if (webhookData.id) {
+      // Alternative format
+      messageId = webhookData.id;
+      status = webhookData.delivery_status?.toLowerCase() || webhookData.status?.toLowerCase();
+      timestamp = webhookData.delivered_at || webhookData.timestamp || new Date();
+    }
+
+    if (!messageId) {
+      console.warn('SMS Webhook: No message ID provided');
+      return res.status(400).json({ success: false, message: 'Message ID required' });
+    }
+
+    // Find the SMS log by API message ID
+    const smsLog = await SMSLog.findOne({ apiMessageId: messageId });
+
+    if (!smsLog) {
+      console.warn(`SMS Webhook: Message ID ${messageId} not found in logs`);
+      return res.status(404).json({ success: false, message: 'SMS log not found' });
+    }
+
+    // Update status based on webhook
+    let newStatus = smsLog.status; // Keep current status by default
+
+    switch (status) {
+      case 'delivered':
+      case 'delivrd':
+      case 'deliverd':
+        newStatus = 'delivered';
+        smsLog.deliveredAt = timestamp;
+        break;
+      case 'failed':
+      case 'fail':
+      case 'undelivered':
+      case 'undeliv':
+        newStatus = 'failed';
+        break;
+      case 'sent':
+      case 'send':
+        newStatus = 'sent';
+        smsLog.sentAt = timestamp;
+        break;
+      case 'queued':
+      case 'pending':
+        newStatus = 'queued';
+        break;
+      default:
+        console.log(`SMS Webhook: Unknown status "${status}" for message ${messageId}`);
+        break;
+    }
+
+    // Only update if status changed
+    if (newStatus !== smsLog.status) {
+      smsLog.status = newStatus;
+      await smsLog.save();
+      console.log(`SMS Webhook: Updated message ${messageId} status to ${newStatus}`);
+    } else {
+      console.log(`SMS Webhook: Message ${messageId} status unchanged (${status})`);
+    }
+
+    res.json({ success: true, message: 'Webhook processed' });
+
+  } catch (error) {
+    console.error('SMS Webhook error:', error);
+    res.status(500).json({ success: false, message: 'Webhook processing failed' });
+  }
+};
+
+/**
  * SMS Controller
  * Handles SMS sending, campaigns, and logs
  */
@@ -104,7 +189,7 @@ export const sendSMS = async (req, res, next) => {
     
     if (result.success) {
       smsLog.status = 'sent';
-      smsLog.messageId = result.messageId;
+      smsLog.apiMessageId = result.messageId;
     } else {
       smsLog.status = 'failed';
       smsLog.errorMessage = result.error;
@@ -254,7 +339,7 @@ export const sendBulkSMS = async (req, res, next) => {
       const result = results[i];
       if (result.status === 'fulfilled' && result.value.success) {
         smsLogs[i].status = 'sent';
-        smsLogs[i].messageId = result.value.messageId;
+        smsLogs[i].apiMessageId = result.value.messageId;
       } else {
         smsLogs[i].status = 'failed';
         const errorMsg = result.reason?.message || result.value?.error || 'Failed to send';

@@ -95,8 +95,8 @@ export const getCompany = async (req, res, next) => {
       {
         $group: {
           _id: null,
-          totalSent: { $sum: { $cond: [{ $in: ['$status', ['sent', 'delivered']] }, 1, 0] } },
-          totalDelivered: { $sum: { $cond: [{ $in: ['$status', ['sent', 'delivered']] }, 1, 0] } },
+          totalSent: { $sum: 1 },
+          totalDelivered: { $sum: { $cond: [{ $eq: ['$status', 'delivered'] }, 1, 0] } },
           totalFailed: { $sum: { $cond: [{ $eq: ['$status', 'failed'] }, 1, 0] } },
           totalCost: { $sum: '$cost' }
         }
@@ -286,8 +286,8 @@ export const getPlatformStats = async (req, res, next) => {
           profit: (creditStats[0]?.totalRevenue || 0) - (creditStats[0]?.totalCost || 0)
         },
         today: {
-          sent: (todayStats.find(s => s._id === 'sent')?.count || 0) + (todayStats.find(s => s._id === 'delivered')?.count || 0),
-          delivered: (todayStats.find(s => s._id === 'sent')?.count || 0) + (todayStats.find(s => s._id === 'delivered')?.count || 0),
+          sent: todayStats.find(s => s._id === 'sent')?.count || 0,
+          delivered: todayStats.find(s => s._id === 'delivered')?.count || 0,
           failed: todayStats.find(s => s._id === 'failed')?.count || 0
         },
         recentTransactions

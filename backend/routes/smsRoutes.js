@@ -8,7 +8,8 @@ import {
   getCampaign,
   getSMSLogs,
   getSMSStats,
-  cancelCampaign
+  cancelCampaign,
+  smsWebhook
 } from '../controllers/smsController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -30,6 +31,9 @@ const upload = multer({
     }
   }
 });
+
+// Webhook endpoint (public, no auth required)
+router.post('/webhook', smsWebhook);
 
 // All routes require authentication
 router.use(protect);

@@ -10,6 +10,7 @@ const BLESSEDTEXTS_API_KEY = process.env.BLESSEDTEXTS_API_KEY;
 const BLESSEDTEXTS_SENDER = process.env.BLESSEDTEXTS_SENDER || 'INFO';
 
 const API_BASE_URL = 'https://sms.blessedtexts.com/api/sms/v1';
+const SMS_WEBHOOK_URL = process.env.SMS_WEBHOOK_URL || `${process.env.CLIENT_URL || 'http://localhost:5000'}/api/sms/webhook`;
 
 // Console logging removed for production
 
@@ -42,7 +43,8 @@ export const sendSMS = async (phone, message, senderId = 'INFO') => {
       api_key: BLESSEDTEXTS_API_KEY,
       sender_id: senderId || BLESSEDTEXTS_SENDER,
       message: message,
-      phone: formattedPhone
+      phone: formattedPhone,
+      webhook_url: SMS_WEBHOOK_URL
     };
 
     console.log('SMS Payload:', payload);
@@ -109,7 +111,8 @@ export const sendBulkSMS = async (phones, message, senderId = 'INFO') => {
       api_key: BLESSEDTEXTS_API_KEY,
       to: formattedPhones,
       message: message,
-      sender: senderId || BLESSEDTEXTS_SENDER
+      sender: senderId || BLESSEDTEXTS_SENDER,
+      webhook_url: SMS_WEBHOOK_URL
     };
 
     const response = await axios.post(
