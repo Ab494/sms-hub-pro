@@ -564,12 +564,21 @@ export const requestWithdrawal = async (req, res, next) => {
     const netProfit = totalRevenue - totalCost;
 
     // Check already requested withdrawals
-    const [withdrawalStats] = await Withdrawal.aggregate([
-      { $match: { status: { $in: ['pending', 'processing'] } } },
-      { $group: { _id: null, totalPending: { $sum: '$amount' } } }
+    const withdrawalStats = await Withdrawal.aggregate([
+      {
+        $group: {
+          _id: '$status',
+          total: { $sum: '$amount' }
+        }
+      }
     ]);
 
-    const availableForWithdrawal = totalRevenue - (withdrawalStats?.totalPending || 0);
+    const pendingWithdrawals = withdrawalStats.find(s => s._id === 'pending')?.total || 0;
+    const processingWithdrawals = withdrawalStats.find(s => s._id === 'processing')?.total || 0;
+    const completedWithdrawals = withdrawalStats.find(s => s._id === 'completed')?.total || 0;
+
+    const totalWithdrawn = pendingWithdrawals + processingWithdrawals + completedWithdrawals;
+    const availableForWithdrawal = totalRevenue - totalWithdrawn;
 
     if (amount > availableForWithdrawal) {
       return res.status(400).json({
