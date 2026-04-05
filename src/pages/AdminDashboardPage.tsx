@@ -220,7 +220,7 @@ export default function AdminDashboardPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold">Withdrawals</h3>
-                  <p className="text-sm text-muted-foreground">Manage profit withdrawals</p>
+                  <p className="text-sm text-muted-foreground">Manage fund withdrawals</p>
                 </div>
               </div>
             </CardContent>

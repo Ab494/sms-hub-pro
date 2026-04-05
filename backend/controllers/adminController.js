@@ -559,7 +559,9 @@ export const requestWithdrawal = async (req, res, next) => {
       }
     ]);
 
-    const availableProfit = (creditStats?.totalRevenue || 0) - (creditStats?.totalCost || 0);
+    const totalRevenue = creditStats?.totalRevenue || 0;
+    const totalCost = creditStats?.totalCost || 0;
+    const netProfit = totalRevenue - totalCost;
 
     // Check already requested withdrawals
     const [withdrawalStats] = await Withdrawal.aggregate([
@@ -567,12 +569,12 @@ export const requestWithdrawal = async (req, res, next) => {
       { $group: { _id: null, totalPending: { $sum: '$amount' } } }
     ]);
 
-    const availableForWithdrawal = availableProfit - (withdrawalStats?.totalPending || 0);
+    const availableForWithdrawal = totalRevenue - (withdrawalStats?.totalPending || 0);
 
     if (amount > availableForWithdrawal) {
       return res.status(400).json({
         success: false,
-        message: `Insufficient funds. Available for withdrawal: KES ${availableForWithdrawal.toLocaleString()}`
+        message: `Insufficient funds. Available revenue for withdrawal: KES ${availableForWithdrawal.toLocaleString()}`
       });
     }
 
@@ -713,7 +715,9 @@ export const getWithdrawalStats = async (req, res, next) => {
       }
     ]);
 
-    const totalProfit = (creditStats?.totalRevenue || 0) - (creditStats?.totalCost || 0);
+    const totalRevenue = creditStats?.totalRevenue || 0;
+    const totalCost = creditStats?.totalCost || 0;
+    const netProfit = totalRevenue - totalCost;
 
     // Get withdrawal statistics
     const withdrawalStats = await Withdrawal.aggregate([
@@ -726,17 +730,19 @@ export const getWithdrawalStats = async (req, res, next) => {
       }
     ]);
 
-    // Calculate available for withdrawal
+    // Calculate available for withdrawal (using total revenue)
     const pendingWithdrawals = withdrawalStats.find(s => s._id === 'pending')?.total || 0;
     const processingWithdrawals = withdrawalStats.find(s => s._id === 'processing')?.total || 0;
     const totalWithdrawn = withdrawalStats.find(s => s._id === 'completed')?.total || 0;
 
-    const availableForWithdrawal = totalProfit - pendingWithdrawals - processingWithdrawals - totalWithdrawn;
+    const availableForWithdrawal = totalRevenue - pendingWithdrawals - processingWithdrawals - totalWithdrawn;
 
     res.json({
       success: true,
       data: {
-        totalProfit,
+        totalRevenue,
+        totalCost,
+        netProfit,
         totalWithdrawn,
         pendingWithdrawals,
         processingWithdrawals,
