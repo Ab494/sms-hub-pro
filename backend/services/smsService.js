@@ -1,4 +1,5 @@
 import axios from 'axios';
+import PlatformSettings from '../models/PlatformSettings.js';
 
 /**
  * BlessedTexts SMS Service
@@ -6,8 +7,7 @@ import axios from 'axios';
  */
 
 const BLESSEDTEXTS_API_KEY = process.env.BLESSEDTEXTS_API_KEY;
-const BLESSEDTEXTS_SENDER = process.env.BLESSEDTEXTS_SENDER || 'FERRITE';
-const DEFAULT_SENDER_ID = process.env.DEFAULT_SENDER_ID || 'FERRITE';
+const BLESSEDTEXTS_SENDER = process.env.BLESSEDTEXTS_SENDER || 'INFO';
 
 const API_BASE_URL = 'https://sms.blessedtexts.com/api/sms/v1';
 
@@ -20,7 +20,7 @@ const API_BASE_URL = 'https://sms.blessedtexts.com/api/sms/v1';
  * @param {string} senderId - Sender ID
  * @returns {Promise<Object>} API response
  */
-export const sendSMS = async (phone, message, senderId = DEFAULT_SENDER_ID) => {
+export const sendSMS = async (phone, message, senderId = 'INFO') => {
   try {
     console.log('Sending SMS:', { phone, messageLength: message.length, senderId });
 
@@ -96,7 +96,7 @@ export const sendSMS = async (phone, message, senderId = DEFAULT_SENDER_ID) => {
  * @param {string} senderId - Sender ID
  * @returns {Promise<Object>} API response
  */
-export const sendBulkSMS = async (phones, message, senderId = DEFAULT_SENDER_ID) => {
+export const sendBulkSMS = async (phones, message, senderId = 'INFO') => {
   try {
     if (!BLESSEDTEXTS_API_KEY) {
       throw new Error('BlessedTexts API key not configured');

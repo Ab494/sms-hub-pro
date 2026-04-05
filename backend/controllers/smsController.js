@@ -2,6 +2,7 @@ import Campaign from '../models/Campaign.js';
 import SMSLog from '../models/SMSLog.js';
 import Contact from '../models/Contact.js';
 import User from '../models/User.js';
+import PlatformSettings from '../models/PlatformSettings.js';
 import { sendSMS as sendSMSApi } from '../services/smsService.js';
 import { deductCredits } from '../controllers/creditsController.js';
 import csv from 'csv-parser';
@@ -53,7 +54,9 @@ export const sendSMS = async (req, res, next) => {
 
     console.log('User balance:', user.smsBalance);
 
-    const finalSenderId = senderId || user.senderId || process.env.DEFAULT_SENDER_ID;
+    // Get default sender ID from platform settings
+    const defaultSenderId = await PlatformSettings.getDefaultSenderId();
+    const finalSenderId = senderId || user.senderId || defaultSenderId;
 
     // Calculate cost
     const segments = Math.ceil(message.length / 160);
@@ -198,7 +201,9 @@ export const sendBulkSMS = async (req, res, next) => {
     }
 
     const user = await User.findById(req.user._id);
-    const finalSenderId = senderId || user.senderId || process.env.DEFAULT_SENDER_ID;
+    // Get default sender ID from platform settings
+    const defaultSenderId = await PlatformSettings.getDefaultSenderId();
+    const finalSenderId = senderId || user.senderId || defaultSenderId;
 
     // Calculate cost
     const segments = Math.ceil(message.length / 160);
@@ -252,7 +257,8 @@ export const sendBulkSMS = async (req, res, next) => {
         smsLogs[i].messageId = result.value.messageId;
       } else {
         smsLogs[i].status = 'failed';
-        smsLogs[i].errorMessage = result.reason?.message || result.value?.error || 'Failed to send';
+        const errorMsg = result.reason?.message || result.value?.error || 'Failed to send';
+        smsLogs[i].errorMessage = typeof errorMsg === 'object' ? JSON.stringify(errorMsg) : errorMsg;
       }
     }
     await SMSLog.bulkSave(smsLogs);

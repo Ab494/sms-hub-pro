@@ -48,19 +48,13 @@ const platformSettingsSchema = new mongoose.Schema({
 
 // Static method to get pricing settings
 platformSettingsSchema.statics.getPricing = async function() {
-  const settings = await this.find({ key: { $in: [
-    'sms_price_per_unit',
-    'sms_cost_per_unit',
-    'minimum_credit_purchase',
-    'bonus_credits_percent',
-    'currency'
-  ]}});
-  
+  const settings = await this.find({ key: { $in: ['sms_price_per_unit', 'sms_cost_per_unit', 'minimum_credit_purchase', 'bonus_credits_percent', 'currency'] } });
+
   const pricing = {};
   settings.forEach(s => {
     pricing[s.key] = s.value;
   });
-  
+
   // Set defaults if not configured
   return {
     sms_price_per_unit: pricing.sms_price_per_unit || 0.46,
@@ -69,6 +63,13 @@ platformSettingsSchema.statics.getPricing = async function() {
     bonus_credits_percent: pricing.bonus_credits_percent || 0,
     currency: pricing.currency || 'KES'
   };
+};
+
+// Static method to get default sender ID
+platformSettingsSchema.statics.getDefaultSenderId = async function() {
+  const setting = await this.findOne({ key: 'default_sender_id' });
+  return setting?.value || 'INFO';
+};
 };
 
 // Static method to initialize default settings
