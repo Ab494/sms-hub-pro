@@ -264,13 +264,35 @@ export default function SendSmsPage() {
     <div>
       <PageHeader title="Send SMS" description="Compose and send a new SMS message" />
 
+      {/* New Feature Banner */}
+      <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div className="flex items-center gap-3">
+          <Upload className="h-5 w-5 text-blue-600" />
+          <div>
+            <h3 className="text-sm font-semibold text-blue-900">New Feature: Import Contacts</h3>
+            <p className="text-sm text-blue-700">
+              Upload CSV or Excel files to send SMS to hundreds of contacts at once. Click the "Import CSV/Excel" tab above.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="lg:col-span-3 space-y-5">
           <Tabs value={sendingMode} onValueChange={(value) => setSendingMode(value as "single" | "bulk" | "import")}>
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="single">Single SMS</TabsTrigger>
-              <TabsTrigger value="bulk">Bulk SMS</TabsTrigger>
-              <TabsTrigger value="import">Import File</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-3 mb-6">
+              <TabsTrigger value="single" className="flex items-center gap-2">
+                <MessageSquare className="h-4 w-4" />
+                Single SMS
+              </TabsTrigger>
+              <TabsTrigger value="bulk" className="flex items-center gap-2">
+                <Send className="h-4 w-4" />
+                Bulk SMS
+              </TabsTrigger>
+              <TabsTrigger value="import" className="flex items-center gap-2">
+                <Upload className="h-4 w-4" />
+                Import CSV/Excel
+              </TabsTrigger>
             </TabsList>
 
             {/* Single SMS Tab */}
@@ -449,18 +471,17 @@ export default function SendSmsPage() {
                     <p className="text-xs text-blue-700 mb-2">
                       Your file should have columns for contact information. The system will automatically detect phone numbers.
                     </p>
-                    <div className="text-xs text-blue-700">
+                    <div className="text-xs text-blue-700 mb-3">
                       <strong>Supported columns:</strong> phone, telephone, mobile, contact, number<br/>
                       <strong>Example:</strong> name, phone → John Doe, +254712345678
                     </div>
-                    <div className="mt-2">
-                      <a
-                        href="#"
-                        className="text-xs text-blue-600 hover:text-blue-800 underline flex items-center gap-1"
-                        onClick={(e) => {
-                          e.preventDefault();
+                    <div className="flex gap-3">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
                           // Download sample CSV
-                          const csvContent = "name,phone\nJohn Doe,+254712345678\nJane Smith,0712345679\n";
+                          const csvContent = "name,phone,email,company\nJohn Kamau,+254712345678,john.kamau@email.com,Kamau Enterprises\nMary Wanjiku,0712345679,mary.wanjiku@email.com,Wanjiku Solutions\nDavid Kiprop,7123456780,david.kiprop@email.com,Kiprop Tech\nSarah Achieng,+254723456781,sarah.achieng@email.com,Achieng Consulting\n";
                           const blob = new Blob([csvContent], { type: 'text/csv' });
                           const url = window.URL.createObjectURL(blob);
                           const a = document.createElement('a');
@@ -469,10 +490,14 @@ export default function SendSmsPage() {
                           a.click();
                           window.URL.revokeObjectURL(url);
                         }}
+                        className="flex items-center gap-2"
                       >
                         <Download className="h-3 w-3" />
-                        Download sample CSV
-                      </a>
+                        Download Sample CSV
+                      </Button>
+                      <div className="text-xs text-blue-600 self-center">
+                        Contains 10 sample contacts
+                      </div>
                     </div>
                   </div>
 
