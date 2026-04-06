@@ -133,6 +133,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <AppRoutes />
+          <ChatBot />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
