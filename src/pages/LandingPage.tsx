@@ -8,13 +8,17 @@ import promo1 from "@/assets/promo-1.jpeg";
 import promo2 from "@/assets/promo-2.jpeg";
 import promo3 from "@/assets/promo-3.jpeg";
 import promo4 from "@/assets/promo-4.jpeg";
+import serviceBulkSms from "@/assets/service-bulk-sms.jpg";
+import serviceContacts from "@/assets/service-contacts.jpg";
+import serviceCampaigns from "@/assets/service-campaigns.jpg";
+import serviceAnalytics from "@/assets/service-analytics.jpg";
 import { useAuth } from "@/contexts/AuthContext";
 
 const services = [
-  { label: "Bulk SMS", icon: Send, description: "Send thousands of messages instantly to your audience" },
-  { label: "Contacts", icon: Users, description: "Manage and organize your contact lists effortlessly" },
-  { label: "Campaigns", icon: BarChart3, description: "Create targeted SMS campaigns that convert" },
-  { label: "Analytics", icon: BarChart3, description: "Track delivery rates and campaign performance" },
+  { label: "Bulk SMS", image: serviceBulkSms, description: "Send thousands of messages instantly to your audience" },
+  { label: "Contacts", image: serviceContacts, description: "Manage and organize your contact lists effortlessly" },
+  { label: "Campaigns", image: serviceCampaigns, description: "Create targeted SMS campaigns that convert" },
+  { label: "Analytics", image: serviceAnalytics, description: "Track delivery rates and campaign performance" },
 ];
 
 const features = [
