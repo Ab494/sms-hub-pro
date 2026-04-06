@@ -168,12 +168,14 @@ export default function LandingPage() {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {services.map((service) => (
-              <div key={service.label} className="bg-card rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1 border border-border group">
-                <div className="h-12 w-12 rounded-xl bg-[hsl(174,72%,46%)]/10 flex items-center justify-center mb-4 group-hover:bg-[hsl(174,72%,46%)]/20 transition-colors">
-                  <service.icon className="h-6 w-6 text-[hsl(174,72%,46%)]" />
+              <div key={service.label} className="bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1 border border-border group">
+                <div className="h-40 overflow-hidden">
+                  <img src={service.image} alt={service.label} loading="lazy" width={640} height={640} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 </div>
-                <h3 className="font-semibold text-foreground mb-2">{service.label}</h3>
-                <p className="text-sm text-muted-foreground">{service.description}</p>
+                <div className="p-6">
+                  <h3 className="font-semibold text-foreground mb-2">{service.label}</h3>
+                  <p className="text-sm text-muted-foreground">{service.description}</p>
+                </div>
               </div>
             ))}
           </div>
