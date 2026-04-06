@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { ChatBot } from "@/components/ChatBot";
 
 // Lazy load pages for code splitting
 const LandingPage = React.lazy(() => import("@/pages/LandingPage"));
