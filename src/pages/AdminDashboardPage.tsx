@@ -34,6 +34,12 @@ interface PlatformStats {
     totalCost: number;
     profit: number;
   };
+  withdrawals?: {
+    totalWithdrawn: number;
+    pendingWithdrawals: number;
+    processingWithdrawals: number;
+    availableForWithdrawal: number;
+  };
   today: {
     sent: number;
     delivered: number;
