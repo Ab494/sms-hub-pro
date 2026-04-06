@@ -10,7 +10,9 @@ services:
       - key: PORT
         value: 10000
       - key: CLIENT_URL
-        value: https://convex-sms.vercel.app
+        value: https://254convexcomltd.africa
+      - key: CORS_ORIGINS
+        value: https://254convexcomltd.africa,https://www.254convexcomltd.africa,https://convex-sms.vercel.app
       - key: MONGODB_URI
         value: mongodb+srv://cheruiyotevans646_db_user:Evans6042@cluster0.sd7of0h.mongodb.net/?appName=Cluster0
       - key: JWT_SECRET
