@@ -219,4 +219,22 @@ export const adminAPI = {
     api.get('/admin/withdrawals/stats'),
 };
 
+// Sender ID API
+export const senderIdAPI = {
+  getAvailable: (category?: string) =>
+    api.get('/sender-ids/available', { params: { category } }),
+
+  getMine: () =>
+    api.get('/sender-ids/mine'),
+
+  purchase: (id: string) =>
+    api.post(`/sender-ids/${id}/purchase`),
+
+  requestCustom: (data: { senderId: string; reason: string }) =>
+    api.post('/sender-ids/request', data),
+
+  getMyRequests: () =>
+    api.get('/sender-ids/requests'),
+};
+
 export default api;

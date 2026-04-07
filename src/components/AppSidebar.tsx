@@ -17,6 +17,7 @@ import {
   CreditCard,
   Building2,
   DollarSign,
+  Fingerprint,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ const menuItems = [
   { label: "SMS Campaigns", icon: Megaphone, path: "/campaigns" },
   { label: "Contacts", icon: Users, path: "/contacts" },
   { label: "Contact Groups", icon: FolderOpen, path: "/groups" },
+  { label: "Sender IDs", icon: Fingerprint, path: "/sender-ids" },
   { label: "SMS Logs", icon: FileText, path: "/logs" },
   { label: "Reports", icon: BarChart3, path: "/reports" },
   { label: "Credits", icon: CreditCard, path: "/credits" },

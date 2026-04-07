@@ -99,6 +99,7 @@ function AppRoutes() {
             <Route path="/logs" element={<SmsLogsPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/credits" element={<CreditsPage />} />
+            <Route path="/sender-ids" element={<SenderIdPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
           
