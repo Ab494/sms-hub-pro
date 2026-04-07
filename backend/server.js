@@ -139,6 +139,7 @@ app.use('/api/contacts', contactsRoutes);
 app.use('/api/groups', groupsRoutes);
 app.use('/api/sms', smsRoutes);
 app.use('/api/credits', creditsRoutes);
+app.use('/api/sender-ids', senderIdRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Health check endpoint
