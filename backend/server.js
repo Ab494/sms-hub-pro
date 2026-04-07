@@ -16,6 +16,7 @@ import contactsRoutes from './routes/contactsRoutes.js';
 import groupsRoutes from './routes/groupsRoutes.js';
 import smsRoutes from './routes/smsRoutes.js';
 import creditsRoutes from './routes/creditsRoutes.js';
+import senderIdRoutes from './routes/senderIdRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 
 // Import middleware
@@ -138,6 +139,7 @@ app.use('/api/contacts', contactsRoutes);
 app.use('/api/groups', groupsRoutes);
 app.use('/api/sms', smsRoutes);
 app.use('/api/credits', creditsRoutes);
+app.use('/api/sender-ids', senderIdRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Health check endpoint
