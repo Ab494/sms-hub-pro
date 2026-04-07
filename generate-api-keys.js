@@ -25,7 +25,7 @@ function generateCompanyKeys(companyNames) {
 }
 
 // Example usage - customize with your company names
-const companies = ['CompanyA', 'CompanyB', 'CompanyC'];
+const companies = ['Convex'];
 const apiKeys = generateCompanyKeys(companies);
 
 console.log('Generated API Keys:');
