@@ -8,13 +8,17 @@ import promo1 from "@/assets/promo-1.jpeg";
 import promo2 from "@/assets/promo-2.jpeg";
 import promo3 from "@/assets/promo-3.jpeg";
 import promo4 from "@/assets/promo-4.jpeg";
+import serviceBulkSms from "@/assets/service-bulk-sms.jpg";
+import serviceContacts from "@/assets/service-contacts.jpg";
+import serviceCampaigns from "@/assets/service-campaigns.jpg";
+import serviceAnalytics from "@/assets/service-analytics.jpg";
 import { useAuth } from "@/contexts/AuthContext";
 
 const services = [
-  { label: "Bulk SMS", icon: Send, description: "Send thousands of messages instantly to your audience" },
-  { label: "Contacts", icon: Users, description: "Manage and organize your contact lists effortlessly" },
-  { label: "Campaigns", icon: BarChart3, description: "Create targeted SMS campaigns that convert" },
-  { label: "Analytics", icon: BarChart3, description: "Track delivery rates and campaign performance" },
+  { label: "Bulk SMS", image: serviceBulkSms, description: "Send thousands of messages instantly to your audience" },
+  { label: "Contacts", image: serviceContacts, description: "Manage and organize your contact lists effortlessly" },
+  { label: "Campaigns", image: serviceCampaigns, description: "Create targeted SMS campaigns that convert" },
+  { label: "Analytics", image: serviceAnalytics, description: "Track delivery rates and campaign performance" },
 ];
 
 const features = [
@@ -164,12 +168,14 @@ export default function LandingPage() {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {services.map((service) => (
-              <div key={service.label} className="bg-card rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1 border border-border group">
-                <div className="h-12 w-12 rounded-xl bg-[hsl(174,72%,46%)]/10 flex items-center justify-center mb-4 group-hover:bg-[hsl(174,72%,46%)]/20 transition-colors">
-                  <service.icon className="h-6 w-6 text-[hsl(174,72%,46%)]" />
+              <div key={service.label} className="bg-card rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1 border border-border group">
+                <div className="h-40 overflow-hidden">
+                  <img src={service.image} alt={service.label} loading="lazy" width={640} height={640} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 </div>
-                <h3 className="font-semibold text-foreground mb-2">{service.label}</h3>
-                <p className="text-sm text-muted-foreground">{service.description}</p>
+                <div className="p-6">
+                  <h3 className="font-semibold text-foreground mb-2">{service.label}</h3>
+                  <p className="text-sm text-muted-foreground">{service.description}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -177,22 +183,6 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      {/* Promo Gallery */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Trusted Across Kenya</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Fixed rate of only Kshs 0.46 per SMS — cross-network delivery, no monthly charges, no setup fee.</p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[promo1, promo2, promo3, promo4].map((img, i) => (
-              <div key={i} className="rounded-2xl overflow-hidden shadow-lg border border-border hover:shadow-xl transition-shadow duration-300 hover:-translate-y-1">
-                <img src={img} alt={`TumaPrime SMS promo ${i + 1}`} className="w-full h-64 object-cover" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Features Section */}
       <section className="py-20">

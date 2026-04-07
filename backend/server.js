@@ -36,26 +36,33 @@ app.use(helmet({
 }));
 
 // CORS configuration - allow multiple origins
+const configuredOrigins = [process.env.CLIENT_URL, process.env.CORS_ORIGINS]
+  .filter(Boolean)
+  .flatMap((value) => value.split(',').map((origin) => origin.trim()).filter(Boolean));
+
+const allowedOrigins = new Set([
+  'http://localhost:5173',
+  'http://localhost:8080',
+  'http://localhost:8081',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:8080',
+  'http://127.0.0.1:8081',
+  'https://sms-hub-convex.onrender.com',
+  'https://convex-sms.vercel.app',
+  'https://254convexcomltd.africa',
+  'https://www.254convexcomltd.africa',
+  ...configuredOrigins,
+]);
+
 const corsOptions = {
   origin: function(origin, callback) {
     // Allow requests with no origin (mobile apps, curl, postman)
     if (!origin) return callback(null, true);
     
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'http://localhost:8080',
-      'http://localhost:8081',
-      'http://127.0.0.1:5173',
-      'http://127.0.0.1:8080',
-      'http://127.0.0.1:8081',
-      'https://sms-hub-convex.onrender.com',
-      'https://convex-sms.vercel.app'
-    ];
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    if (allowedOrigins.has(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   },
   credentials: true,
@@ -64,6 +71,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // Rate limiting - per user
 const createUserRateLimiter = () => {
