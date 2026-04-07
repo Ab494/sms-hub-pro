@@ -26,6 +26,7 @@ const AdminCompaniesPage = React.lazy(() => import("@/pages/AdminCompaniesPage")
 const AdminTransactionsPage = React.lazy(() => import("@/pages/AdminTransactionsPage"));
 const AdminSettingsPage = React.lazy(() => import("@/pages/AdminSettingsPage"));
 const WithdrawalsPage = React.lazy(() => import("@/pages/WithdrawalsPage"));
+const AdminSenderIdsPage = React.lazy(() => import("@/pages/AdminSenderIdsPage"));
 const NotFound = React.lazy(() => import("@/pages/NotFound"));
 
 const queryClient = new QueryClient();
