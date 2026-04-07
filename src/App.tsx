@@ -118,6 +118,7 @@ function AppRoutes() {
           <Route path="companies" element={<AdminCompaniesPage />} />
           <Route path="transactions" element={<AdminTransactionsPage />} />
           <Route path="withdrawals" element={<WithdrawalsPage />} />
+          <Route path="sender-ids" element={<AdminSenderIdsPage />} />
           <Route path="settings" element={<AdminSettingsPage />} />
           </Route>
           

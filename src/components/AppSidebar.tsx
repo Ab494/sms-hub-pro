@@ -39,6 +39,7 @@ const menuItems = [
 const adminMenuItems = [
   { label: "Admin Dashboard", icon: Shield, path: "/admin/dashboard" },
   { label: "Companies", icon: Building2, path: "/admin/companies" },
+  { label: "Sender IDs", icon: Fingerprint, path: "/admin/sender-ids" },
   { label: "Transactions", icon: CreditCard, path: "/admin/transactions" },
   { label: "Withdrawals", icon: DollarSign, path: "/admin/withdrawals" },
   { label: "Platform Settings", icon: Settings, path: "/admin/settings" },
