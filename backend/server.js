@@ -16,6 +16,7 @@ import contactsRoutes from './routes/contactsRoutes.js';
 import groupsRoutes from './routes/groupsRoutes.js';
 import smsRoutes from './routes/smsRoutes.js';
 import creditsRoutes from './routes/creditsRoutes.js';
+import senderIdRoutes from './routes/senderIdRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 
 // Import middleware
