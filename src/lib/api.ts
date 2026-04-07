@@ -217,6 +217,22 @@ export const adminAPI = {
 
   getWithdrawalStats: () =>
     api.get('/admin/withdrawals/stats'),
+
+  // Sender ID Management
+  getSenderIds: () =>
+    api.get('/admin/sender-ids'),
+
+  createSenderId: (data: { senderId: string; name: string; description?: string; price: number; category: string; isRegistered?: boolean }) =>
+    api.post('/admin/sender-ids', data),
+
+  deleteSenderId: (id: string) =>
+    api.delete(`/admin/sender-ids/${id}`),
+
+  getSenderIdRequests: (params?: { status?: string }) =>
+    api.get('/admin/sender-id-requests', { params }),
+
+  reviewSenderIdRequest: (id: string, data: { action: 'approve' | 'reject'; adminNotes?: string }) =>
+    api.put(`/admin/sender-id-requests/${id}`, data),
 };
 
 // Sender ID API
