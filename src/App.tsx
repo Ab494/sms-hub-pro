@@ -26,6 +26,7 @@ const AdminCompaniesPage = React.lazy(() => import("@/pages/AdminCompaniesPage")
 const AdminTransactionsPage = React.lazy(() => import("@/pages/AdminTransactionsPage"));
 const AdminSettingsPage = React.lazy(() => import("@/pages/AdminSettingsPage"));
 const WithdrawalsPage = React.lazy(() => import("@/pages/WithdrawalsPage"));
+const AdminSenderIdsPage = React.lazy(() => import("@/pages/AdminSenderIdsPage"));
 const NotFound = React.lazy(() => import("@/pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -117,6 +118,7 @@ function AppRoutes() {
           <Route path="companies" element={<AdminCompaniesPage />} />
           <Route path="transactions" element={<AdminTransactionsPage />} />
           <Route path="withdrawals" element={<WithdrawalsPage />} />
+          <Route path="sender-ids" element={<AdminSenderIdsPage />} />
           <Route path="settings" element={<AdminSettingsPage />} />
           </Route>
           
