@@ -19,6 +19,7 @@ const GroupsPage = React.lazy(() => import("@/pages/GroupsPage"));
 const SmsLogsPage = React.lazy(() => import("@/pages/SmsLogsPage"));
 const ReportsPage = React.lazy(() => import("@/pages/ReportsPage"));
 const CreditsPage = React.lazy(() => import("@/pages/CreditsPage"));
+const SenderIdPage = React.lazy(() => import("@/pages/SenderIdPage"));
 const SettingsPage = React.lazy(() => import("@/pages/SettingsPage"));
 const AdminDashboardPage = React.lazy(() => import("@/pages/AdminDashboardPage"));
 const AdminCompaniesPage = React.lazy(() => import("@/pages/AdminCompaniesPage"));
