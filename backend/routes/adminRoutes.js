@@ -16,6 +16,13 @@ import {
   processWithdrawal,
   getWithdrawalStats
 } from '../controllers/adminController.js';
+import {
+  getAllSenderIds,
+  createSenderId,
+  deleteSenderId,
+  getAllSenderIdRequests,
+  reviewSenderIdRequest
+} from '../controllers/adminSenderIdController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -51,5 +58,12 @@ router.get('/withdrawals/stats', getWithdrawalStats);
 // Settings management
 router.get('/settings', getPlatformSettings);
 router.put('/settings', updatePlatformSettings);
+
+// Sender ID management
+router.get('/sender-ids', getAllSenderIds);
+router.post('/sender-ids', createSenderId);
+router.delete('/sender-ids/:id', deleteSenderId);
+router.get('/sender-id-requests', getAllSenderIdRequests);
+router.put('/sender-id-requests/:id', reviewSenderIdRequest);
 
 export default router;

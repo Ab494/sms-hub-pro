@@ -217,6 +217,40 @@ export const adminAPI = {
 
   getWithdrawalStats: () =>
     api.get('/admin/withdrawals/stats'),
+
+  // Sender ID Management
+  getSenderIds: () =>
+    api.get('/admin/sender-ids'),
+
+  createSenderId: (data: { senderId: string; name: string; description?: string; price: number; category: string; isRegistered?: boolean }) =>
+    api.post('/admin/sender-ids', data),
+
+  deleteSenderId: (id: string) =>
+    api.delete(`/admin/sender-ids/${id}`),
+
+  getSenderIdRequests: (params?: { status?: string }) =>
+    api.get('/admin/sender-id-requests', { params }),
+
+  reviewSenderIdRequest: (id: string, data: { action: 'approve' | 'reject'; adminNotes?: string }) =>
+    api.put(`/admin/sender-id-requests/${id}`, data),
+};
+
+// Sender ID API
+export const senderIdAPI = {
+  getAvailable: (category?: string) =>
+    api.get('/sender-ids/available', { params: { category } }),
+
+  getMine: () =>
+    api.get('/sender-ids/mine'),
+
+  purchase: (id: string) =>
+    api.post(`/sender-ids/${id}/purchase`),
+
+  requestCustom: (data: { senderId: string; reason: string }) =>
+    api.post('/sender-ids/request', data),
+
+  getMyRequests: () =>
+    api.get('/sender-ids/requests'),
 };
 
 export default api;
