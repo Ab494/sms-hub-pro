@@ -1,9 +1,14 @@
+# render.yaml — Render deployment config
+# All secret values are managed in Render dashboard, NOT here
+
 services:
   - type: web
     name: sms-hub-backend
     runtime: node
+    rootDir: backend
     buildCommand: npm install
     startCommand: npm start
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
@@ -13,12 +18,13 @@ services:
         value: https://254convexcomltd.africa
       - key: CORS_ORIGINS
         value: https://254convexcomltd.africa,https://www.254convexcomltd.africa,https://convex-sms.vercel.app
+      # These are set in Render dashboard — never hardcode secrets here
       - key: MONGODB_URI
-        value: mongodb+srv://cheruiyotevans646_db_user:Evans6042@cluster0.sd7of0h.mongodb.net/?appName=Cluster0
+        sync: false
       - key: JWT_SECRET
-        value: your-super-secret-jwt-key-change-this-in-production-make-it-very-long-and-random-123456789-make-it-at-least-64-characters-long-for-security
+        sync: false
       - key: BLESSEDTEXTS_API_KEY
-        value: 91a4ff20fbac44cd8c0e300a19cfba55
+        sync: false
       - key: BLESSEDTEXTS_SENDER
         value: FERRITE
       - key: DEFAULT_SENDER_ID
