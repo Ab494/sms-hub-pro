@@ -1,0 +1,32 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy to Render & Vercel
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy Backend to Render
+        run: |
+          curl -s --request POST \
+            --url "https://api.render.com/v1/services/${{ secrets.RENDER_BACKEND_SERVICE_ID }}/deploys" \
+            --header "accept: application/json" \
+            --header "content-type: application/json" \
+            --header "authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            --data '{"clearCache":"do_not_clear"}'
+
+      - name: Deploy Frontend to Vercel
+        run: |
+          curl -s --request POST \
+            --url "https://api.vercel.com/v1/integrations/deploy/${{ secrets.VERCEL_DEPLOY_HOOK }}" \
+            --header "content-type: application/json"
+
+      - name: Deployment triggered
+        run: echo "Backend → Render | Frontend → Vercel"
