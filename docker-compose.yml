@@ -1,0 +1,52 @@
+# docker-compose.yml — local development environment
+# MongoDB runs on Atlas cloud — no local DB container needed
+# Usage: docker compose up --build
+
+services:
+
+  # ── Backend (Express API) ───────────────────────────
+  backend:
+    build:
+      context: ./backend
+    container_name: smshub_backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 10000
+      # MongoDB Atlas connection — comes from your .env file
+      MONGODB_URI: ${MONGODB_URI}
+      JWT_SECRET: ${JWT_SECRET}
+      CLIENT_URL: http://localhost:8080
+      CORS_ORIGINS: http://localhost:8080,http://localhost:5173
+      BLESSEDTEXTS_API_KEY: ${BLESSEDTEXTS_API_KEY}
+      BLESSEDTEXTS_SENDER: ${BLESSEDTEXTS_SENDER}
+      DEFAULT_SENDER_ID: ${DEFAULT_SENDER_ID}
+      SMS_COST_PER_UNIT: ${SMS_COST_PER_UNIT:-0.46}
+    ports:
+      - "10000:10000"
+    volumes:
+      # Persist uploaded files (CSV/Excel contacts) across container restarts
+      - uploads_data:/app/uploads
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:10000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ── Frontend (React/Nginx) ──────────────────────────
+  frontend:
+    build:
+      context: .
+      args:
+        VITE_API_URL: http://localhost:10000/api
+    container_name: smshub_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8082:80"
+
+# ── Named Volumes ────────────────────────────────────
+# uploads_data persists contact CSV uploads between container restarts
+volumes:
+  uploads_data:
