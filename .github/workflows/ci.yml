@@ -8,7 +8,6 @@ on:
 
 jobs:
 
-  # ── Job 1: Lint Frontend ────────────────────────────
   lint-frontend:
     name: Lint Frontend
     runs-on: ubuntu-latest
@@ -28,9 +27,6 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
-  # ── Job 2: Test Backend ─────────────────────────────
-  # Backend uses MongoDB Atlas — no local DB container needed
-  # We just verify the backend starts and passes basic checks
   test-backend:
     name: Test Backend
     runs-on: ubuntu-latest
@@ -42,8 +38,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: npm
-          cache-dependency-path: backend/package-lock.json
+          # No cache here — backend uses npm but no package-lock.json
 
       - name: Install backend dependencies
         run: npm install
@@ -53,12 +48,10 @@ jobs:
         run: node --check server.js
         working-directory: backend
 
-  # ── Job 3: Build Frontend ───────────────────────────
   build-frontend:
     name: Build Frontend
     runs-on: ubuntu-latest
     needs: lint-frontend
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
