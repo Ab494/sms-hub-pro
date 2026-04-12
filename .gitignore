@@ -49,3 +49,4 @@ terraform.tfvars
 # Misc
 *.local
 *.tsbuildinfo
+backend/logs/
