@@ -24,6 +24,9 @@ import { protect } from './middleware/authMiddleware.js';
 
 // Import database
 import connectDB from './config/db.js';
+import logger from './utils/logger.js';
+import requestLogger from './middleware/requestLogger.js';
+import healthCheck from './utils/healthCheck.js';
 
 // Initialize Express app
 const app = express();
@@ -31,6 +34,9 @@ const app = express();
 // Trust Render's proxy — required for express-rate-limit to work correctly
 // Without this, rate limiting throws ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
 app.set('trust proxy', 1);
+
+// Request logger — logs every request with method, path, status, duration
+app.use(requestLogger);
 
 // Connect to MongoDB
 connectDB();
@@ -147,7 +153,9 @@ app.use('/api/sender-ids', senderIdRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get('/api/health', healthCheck);
+app.get('/api/v1/health', healthCheck);
+app.get('/api/health_old', (req, res) => {
   res.json({
     success: true,
     message: 'SMS Hub API is running',
