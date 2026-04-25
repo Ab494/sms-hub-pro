@@ -31,7 +31,7 @@ const senderIdRequestSchema = new mongoose.Schema({
   },
   price: {
     type: Number,
-    default: 5000,
+    default: 6499,
   },
 }, {
   timestamps: true,
