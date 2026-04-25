@@ -102,7 +102,7 @@ export default function AdminSenderIdsPage() {
     senderId: "",
     name: "",
     description: "",
-    price: 500,
+    price: 6499,
     category: "generic" as "generic" | "premium" | "custom",
     isRegistered: true,
   });
@@ -162,7 +162,7 @@ export default function AdminSenderIdsPage() {
       await adminAPI.createSenderId(addForm);
       toast.success("Sender ID created successfully");
       setAddDialog(false);
-      setAddForm({ senderId: "", name: "", description: "", price: 500, category: "generic", isRegistered: true });
+      setAddForm({ senderId: "", name: "", description: "", price: 6499, category: "generic", isRegistered: true });
       fetchData();
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to create Sender ID");

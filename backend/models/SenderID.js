@@ -96,20 +96,20 @@ senderIdSchema.statics.getAvailable = function(category = null) {
 senderIdSchema.statics.initializeDefaults = async function() {
   const defaults = [
     // Generic sender IDs (free/low cost)
-    { senderId: 'INFO', name: 'Information', description: 'General information sender', price: 0, category: 'generic', isRegistered: true },
-    { senderId: 'ALERT', name: 'Alerts', description: 'Alert notifications', price: 500, category: 'generic', isRegistered: true },
-    { senderId: 'NEWS', name: 'News', description: 'News updates', price: 500, category: 'generic', isRegistered: true },
-    { senderId: 'UPDATE', name: 'Updates', description: 'Status updates', price: 500, category: 'generic', isRegistered: true },
+    { senderId: 'INFO', name: 'Information', description: 'General information sender', price: 6499, category: 'generic', isRegistered: true },
+    { senderId: 'ALERT', name: 'Alerts', description: 'Alert notifications', price: 6499, category: 'generic', isRegistered: true },
+    { senderId: 'NEWS', name: 'News', description: 'News updates', price: 6499, category: 'generic', isRegistered: true },
+    { senderId: 'UPDATE', name: 'Updates', description: 'Status updates', price: 6499, category: 'generic', isRegistered: true },
 
-    // Premium sender IDs (higher cost)
-    { senderId: 'PROMO', name: 'Promotions', description: 'Promotional messages', price: 2000, category: 'premium', isRegistered: true },
-    { senderId: 'OFFER', name: 'Offers', description: 'Special offers', price: 2000, category: 'premium', isRegistered: true },
-    { senderId: 'DEAL', name: 'Deals', description: 'Great deals', price: 2000, category: 'premium', isRegistered: true },
+    // Premium sender IDs
+    { senderId: 'PROMO', name: 'Promotions', description: 'Promotional messages', price: 6499, category: 'premium', isRegistered: true },
+    { senderId: 'OFFER', name: 'Offers', description: 'Special offers', price: 6499, category: 'premium', isRegistered: true },
+    { senderId: 'DEAL', name: 'Deals', description: 'Great deals', price: 6499, category: 'premium', isRegistered: true },
 
-    // Custom sender IDs (most expensive - available for purchase)
-    { senderId: 'CUSTOM1', name: 'Custom Sender 1', description: 'Available for custom branding', price: 5000, category: 'custom', isRegistered: false },
-    { senderId: 'CUSTOM2', name: 'Custom Sender 2', description: 'Available for custom branding', price: 5000, category: 'custom', isRegistered: false },
-    { senderId: 'CUSTOM3', name: 'Custom Sender 3', description: 'Available for custom branding', price: 5000, category: 'custom', isRegistered: false }
+    // Custom sender IDs (available for purchase)
+    { senderId: 'CUSTOM1', name: 'Custom Sender 1', description: 'Available for custom branding', price: 6499, category: 'custom', isRegistered: false },
+    { senderId: 'CUSTOM2', name: 'Custom Sender 2', description: 'Available for custom branding', price: 6499, category: 'custom', isRegistered: false },
+    { senderId: 'CUSTOM3', name: 'Custom Sender 3', description: 'Available for custom branding', price: 6499, category: 'custom', isRegistered: false }
   ];
 
   for (const senderIdData of defaults) {
