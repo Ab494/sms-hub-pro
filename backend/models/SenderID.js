@@ -92,35 +92,6 @@ senderIdSchema.statics.getAvailable = function(category = null) {
   return this.find(query).sort({ price: 1 });
 };
 
-// Static method to initialize default sender IDs
-senderIdSchema.statics.initializeDefaults = async function() {
-  const defaults = [
-    // Generic sender IDs (free/low cost)
-    { senderId: 'INFO', name: 'Information', description: 'General information sender', price: 6499, category: 'generic', isRegistered: true },
-    { senderId: 'ALERT', name: 'Alerts', description: 'Alert notifications', price: 6499, category: 'generic', isRegistered: true },
-    { senderId: 'NEWS', name: 'News', description: 'News updates', price: 6499, category: 'generic', isRegistered: true },
-    { senderId: 'UPDATE', name: 'Updates', description: 'Status updates', price: 6499, category: 'generic', isRegistered: true },
-
-    // Premium sender IDs
-    { senderId: 'PROMO', name: 'Promotions', description: 'Promotional messages', price: 6499, category: 'premium', isRegistered: true },
-    { senderId: 'OFFER', name: 'Offers', description: 'Special offers', price: 6499, category: 'premium', isRegistered: true },
-    { senderId: 'DEAL', name: 'Deals', description: 'Great deals', price: 6499, category: 'premium', isRegistered: true },
-
-    // Custom sender IDs (available for purchase)
-    { senderId: 'CUSTOM1', name: 'Custom Sender 1', description: 'Available for custom branding', price: 6499, category: 'custom', isRegistered: false },
-    { senderId: 'CUSTOM2', name: 'Custom Sender 2', description: 'Available for custom branding', price: 6499, category: 'custom', isRegistered: false },
-    { senderId: 'CUSTOM3', name: 'Custom Sender 3', description: 'Available for custom branding', price: 6499, category: 'custom', isRegistered: false }
-  ];
-
-  for (const senderIdData of defaults) {
-    await this.findOneAndUpdate(
-      { senderId: senderIdData.senderId },
-      senderIdData,
-      { upsert: true, new: true }
-    );
-  }
-};
-
 // Method to purchase sender ID
 senderIdSchema.methods.purchase = async function(userId, durationMonths = 12) {
   if (this.ownerId) {
