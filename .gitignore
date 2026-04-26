@@ -50,3 +50,11 @@ terraform.tfvars
 *.local
 *.tsbuildinfo
 backend/logs/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+terraform.tfvars
+*.generated.yml
+*.generated
