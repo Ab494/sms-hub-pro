@@ -753,6 +753,48 @@ export default function AdminSenderIdsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Bulk Review Dialog */}
+      <Dialog open={bulkDialog !== null} onOpenChange={(open) => !open && setBulkDialog(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Bulk {bulkDialog === "approve" ? "Approve" : "Reject"} Requests
+            </DialogTitle>
+            <DialogDescription>
+              You are about to {bulkDialog} <strong>{selectedIds.length}</strong> pending
+              request{selectedIds.length === 1 ? "" : "s"}. This cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 py-2">
+            <Label htmlFor="bulkNotes">Admin Notes (applied to all)</Label>
+            <Textarea
+              id="bulkNotes"
+              placeholder="Optional notes shared with users..."
+              rows={3}
+              value={bulkNotes}
+              onChange={(e) => setBulkNotes(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setBulkDialog(null)}
+              disabled={bulkProcessing}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant={bulkDialog === "reject" ? "destructive" : "default"}
+              onClick={handleBulkAction}
+              disabled={bulkProcessing}
+            >
+              {bulkProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Confirm {bulkDialog === "approve" ? "Approve" : "Reject"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
