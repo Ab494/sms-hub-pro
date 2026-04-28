@@ -106,19 +106,50 @@ export const reviewSenderIdRequest = async (req, res) => {
     }
 
     if (action === 'approve') {
-      // Create the sender ID in the system
+      // Load requesting user for company context
+      const requestingUser = await User.findById(request.userId).select('name email company');
+
+      // Forward the registration to BlessedTexts (upstream SMS provider)
+      const providerResult = await registerSenderIdWithProvider({
+        senderId: request.requestedSenderId,
+        reason: request.reason,
+        company: {
+          name: requestingUser?.company || requestingUser?.name || '',
+          email: requestingUser?.email || '',
+        },
+      });
+
+      // Create the sender ID in our system. It is marked isRegistered=true
+      // only if BlessedTexts accepted the submission; otherwise it stays
+      // pending registration and admin can retry.
       const newSenderId = await SenderID.create({
         senderId: request.requestedSenderId,
         name: request.requestedSenderId,
         description: `Custom Sender ID requested by user`,
-        price: request.price || 5000,
+        price: request.price || 6499,
         category: 'custom',
-        isRegistered: true,
+        isRegistered: providerResult.success,
         isActive: true,
       });
 
       request.status = 'approved';
       request.adminNotes = adminNotes || 'Approved';
+      request.providerStatus = providerResult.success ? 'submitted' : 'failed';
+      request.providerReference = providerResult.reference || null;
+      request.providerResponse = providerResult.data || { error: providerResult.error };
+      request.providerSubmittedAt = new Date();
+
+      await request.save();
+
+      return res.json({
+        success: true,
+        message: providerResult.success
+          ? 'Request approved and submitted to BlessedTexts for registration'
+          : 'Request approved, but forwarding to BlessedTexts failed. You can retry from the admin panel.',
+        data: request,
+        provider: providerResult,
+        senderId: newSenderId,
+      });
     } else if (action === 'reject') {
       request.status = 'rejected';
       request.adminNotes = adminNotes || 'Rejected';
