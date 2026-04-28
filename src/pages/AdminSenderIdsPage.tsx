@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { adminAPI } from "@/lib/api";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Fingerprint,
   CheckCircle2,
@@ -44,6 +45,8 @@ import {
   Sparkles,
   Trash2,
   Edit,
+  ListChecks,
+  Filter,
 } from "lucide-react";
 
 interface SenderID {
