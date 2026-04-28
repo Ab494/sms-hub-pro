@@ -1,6 +1,7 @@
 import SenderID from '../models/SenderID.js';
 import SenderIDRequest from '../models/SenderIDRequest.js';
 import User from '../models/User.js';
+import { registerSenderIdWithProvider } from '../services/senderIdProviderService.js';
 
 /**
  * Get all sender IDs (admin)
