@@ -99,6 +99,12 @@ export default function AdminSenderIdsPage() {
   const [adminNotes, setAdminNotes] = useState("");
   const [processing, setProcessing] = useState(false);
 
+  // Bulk selection state
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkDialog, setBulkDialog] = useState<null | "approve" | "reject">(null);
+  const [bulkNotes, setBulkNotes] = useState("");
+  const [bulkProcessing, setBulkProcessing] = useState(false);
+
   // Add Sender ID dialog state
   const [addDialog, setAddDialog] = useState(false);
   const [addForm, setAddForm] = useState({
