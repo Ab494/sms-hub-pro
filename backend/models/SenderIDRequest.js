@@ -33,6 +33,23 @@ const senderIdRequestSchema = new mongoose.Schema({
     type: Number,
     default: 6499,
   },
+  providerStatus: {
+    type: String,
+    enum: ['not_submitted', 'submitted', 'registered', 'failed'],
+    default: 'not_submitted',
+  },
+  providerReference: {
+    type: String,
+    default: null,
+  },
+  providerResponse: {
+    type: mongoose.Schema.Types.Mixed,
+    default: null,
+  },
+  providerSubmittedAt: {
+    type: Date,
+    default: null,
+  },
 }, {
   timestamps: true,
   toJSON: { virtuals: true },
