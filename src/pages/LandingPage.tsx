@@ -107,12 +107,18 @@ export default function LandingPage() {
 
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-border bg-card p-4 space-y-3">
-            {["Solutions", "Pricing", "Developer", "About", "Contact"].map((item) =>(
-              <a key={item} href="#" className="block text-sm font-medium text-muted-foreground py-2">
-                {item}
+            {[
+              { label: "Solutions", href: "#solutions" },
+              { label: "Pricing", href: "#pricing" },
+              { label: "Developer", href: "#developer" },
+              { label: "About", href: "#about" },
+              { label: "Contact", href: "#contact" },
+            ].map((item) => (
+              <a key={item.label} href={item.href} onClick={() => setMobileMenuOpen(false)} className="block text-sm font-medium text-muted-foreground py-2">
+                {item.label}
               </a>
             ))}
-            <Button className="w-full bg-[hsl(174,72%,46%)] hover:bg-[hsl(174,72%,40%)] text-[hsl(0,0%,100%)] rounded-full" onClick={() => { setIsLogin(false); setShowAuthModal(true); }}>
+            <Button className="w-full bg-[hsl(174,72%,46%)] hover:bg-[hsl(174,72%,40%)] text-[hsl(0,0%,100%)] rounded-full" onClick={() => { setIsLogin(false); setShowAuthModal(true); setMobileMenuOpen(false); }}>
               Get Started Now
             </Button>
           </div>
