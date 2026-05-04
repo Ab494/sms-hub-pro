@@ -78,9 +78,15 @@ export default function LandingPage() {
           </div>
 
           <nav className="hidden md:flex items-center gap-8">
-            {["Solutions", "Pricing", "Developer", "About", "Contact"].map((item) => (
-              <a key={item} href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                {item}
+            {[
+              { label: "Solutions", href: "#solutions" },
+              { label: "Pricing", href: "#pricing" },
+              { label: "Developer", href: "#developer" },
+              { label: "About", href: "#about" },
+              { label: "Contact", href: "#contact" },
+            ].map((item) => (
+              <a key={item.label} href={item.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                {item.label}
               </a>
             ))}
           </nav>
@@ -101,12 +107,18 @@ export default function LandingPage() {
 
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-border bg-card p-4 space-y-3">
-            {["Solutions", "Pricing", "Developer", "About", "Contact"].map((item) =>(
-              <a key={item} href="#" className="block text-sm font-medium text-muted-foreground py-2">
-                {item}
+            {[
+              { label: "Solutions", href: "#solutions" },
+              { label: "Pricing", href: "#pricing" },
+              { label: "Developer", href: "#developer" },
+              { label: "About", href: "#about" },
+              { label: "Contact", href: "#contact" },
+            ].map((item) => (
+              <a key={item.label} href={item.href} onClick={() => setMobileMenuOpen(false)} className="block text-sm font-medium text-muted-foreground py-2">
+                {item.label}
               </a>
             ))}
-            <Button className="w-full bg-[hsl(174,72%,46%)] hover:bg-[hsl(174,72%,40%)] text-[hsl(0,0%,100%)] rounded-full" onClick={() => { setIsLogin(false); setShowAuthModal(true); }}>
+            <Button className="w-full bg-[hsl(174,72%,46%)] hover:bg-[hsl(174,72%,40%)] text-[hsl(0,0%,100%)] rounded-full" onClick={() => { setIsLogin(false); setShowAuthModal(true); setMobileMenuOpen(false); }}>
               Get Started Now
             </Button>
           </div>
@@ -159,8 +171,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Services Section */}
-      <section className="bg-muted/50 py-20">
+      {/* Services / Solutions Section */}
+      <section id="solutions" className="bg-muted/50 py-20 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Our Services</h2>
@@ -236,6 +248,125 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-20 bg-muted/30 scroll-mt-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Simple, Transparent Pricing</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">One flat rate across all networks in Kenya. No monthly fees. No setup costs.</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-card border border-border rounded-2xl p-8 shadow-card">
+              <h3 className="font-semibold text-foreground mb-2">Pay As You Go</h3>
+              <p className="text-4xl font-bold text-[hsl(174,72%,46%)] mb-2">KSh 0.46<span className="text-base font-normal text-muted-foreground">/SMS</span></p>
+              <p className="text-sm text-muted-foreground mb-6">Top up any amount, send anytime.</p>
+              <ul className="space-y-2 text-sm text-foreground">
+                <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-[hsl(174,72%,46%)] mt-0.5" /> All networks (Safaricom, Airtel, Telkom)</li>
+                <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-[hsl(174,72%,46%)] mt-0.5" /> Real-time delivery reports</li>
+                <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-[hsl(174,72%,46%)] mt-0.5" /> No expiry on credits</li>
+              </ul>
+            </div>
+            <div className="bg-[hsl(174,72%,46%)] text-[hsl(0,0%,100%)] rounded-2xl p-8 shadow-xl scale-105">
+              <h3 className="font-semibold mb-2">Sender ID</h3>
+              <p className="text-4xl font-bold mb-2">KSh 6,499<span className="text-base font-normal opacity-80">/year</span></p>
+              <p className="text-sm opacity-90 mb-6">Brand your messages with your name.</p>
+              <ul className="space-y-2 text-sm">
+                <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 mt-0.5" /> Custom alphanumeric Sender ID</li>
+                <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 mt-0.5" /> Registered with all MNOs</li>
+                <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 mt-0.5" /> Priority support</li>
+              </ul>
+            </div>
+            <div className="bg-card border border-border rounded-2xl p-8 shadow-card">
+              <h3 className="font-semibold text-foreground mb-2">Enterprise</h3>
+              <p className="text-4xl font-bold text-foreground mb-2">Custom</p>
+              <p className="text-sm text-muted-foreground mb-6">Volume discounts &amp; SLAs for high-volume senders.</p>
+              <ul className="space-y-2 text-sm text-foreground">
+                <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-[hsl(174,72%,46%)] mt-0.5" /> Dedicated account manager</li>
+                <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-[hsl(174,72%,46%)] mt-0.5" /> Custom integrations</li>
+                <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-[hsl(174,72%,46%)] mt-0.5" /> 99.9% uptime SLA</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Developer Section */}
+      <section id="developer" className="py-20 scroll-mt-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Developer Friendly API</h2>
+            <p className="text-muted-foreground mb-6">Integrate SMS into your application in minutes with our REST API. Authentication via API keys, JSON responses, and webhooks for delivery reports.</p>
+            <ul className="space-y-2 text-sm text-foreground mb-6">
+              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-[hsl(174,72%,46%)] mt-0.5" /> RESTful endpoints with JSON</li>
+              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-[hsl(174,72%,46%)] mt-0.5" /> Bulk send up to 100,000 recipients per request</li>
+              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-[hsl(174,72%,46%)] mt-0.5" /> Delivery webhooks &amp; status callbacks</li>
+              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-[hsl(174,72%,46%)] mt-0.5" /> Sandbox environment for testing</li>
+            </ul>
+            <Button className="bg-[hsl(174,72%,46%)] hover:bg-[hsl(174,72%,40%)] text-[hsl(0,0%,100%)] rounded-full px-6" onClick={() => { setIsLogin(false); setShowAuthModal(true); }}>
+              Get API Keys
+            </Button>
+          </div>
+          <div className="bg-[hsl(220,15%,15%)] rounded-2xl p-6 text-[hsl(0,0%,95%)] font-mono text-xs overflow-x-auto shadow-xl">
+            <div className="text-[hsl(174,72%,60%)] mb-2"># Send SMS via TumaPrime API</div>
+            <pre className="leading-relaxed">{`curl -X POST https://api.tumaprime.com/v1/sms/send \\
+  -H "Authorization: Bearer YOUR_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "to": "+254712345678",
+    "from": "TUMAPRIME",
+    "message": "Hello from TumaPrime!"
+  }'`}</pre>
+          </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section id="about" className="py-20 bg-muted/30 scroll-mt-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">About TumaPrime</h2>
+          <p className="text-muted-foreground text-lg mb-6">
+            TumaPrime SMS is a Kenyan bulk messaging platform built to empower businesses,
+            organizations, and developers to communicate with their audiences reliably and affordably.
+          </p>
+          <p className="text-muted-foreground mb-10">
+            We partner with trusted upstream aggregators to deliver messages across Safaricom, Airtel,
+            and Telkom networks at a single transparent rate — no hidden fees, no monthly commitments.
+          </p>
+          <div className="grid sm:grid-cols-3 gap-6">
+            <div className="bg-card border border-border rounded-xl p-6">
+              <div className="text-3xl font-bold text-[hsl(174,72%,46%)] mb-1">99.9%</div>
+              <div className="text-sm text-muted-foreground">Delivery rate</div>
+            </div>
+            <div className="bg-card border border-border rounded-xl p-6">
+              <div className="text-3xl font-bold text-[hsl(340,82%,52%)] mb-1">24/7</div>
+              <div className="text-sm text-muted-foreground">Customer support</div>
+            </div>
+            <div className="bg-card border border-border rounded-xl p-6">
+              <div className="text-3xl font-bold text-[hsl(174,72%,46%)] mb-1">KSh 0.46</div>
+              <div className="text-sm text-muted-foreground">Per SMS, all networks</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-20 scroll-mt-20">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Get in Touch</h2>
+          <p className="text-muted-foreground mb-10">Questions, partnerships, or enterprise enquiries — we'd love to hear from you.</p>
+          <div className="grid sm:grid-cols-2 gap-6 text-left">
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <div className="text-sm text-muted-foreground mb-1">Email</div>
+              <a href="mailto:support@tumaprime.com" className="text-foreground font-semibold hover:text-[hsl(174,72%,46%)]">support@tumaprime.com</a>
+            </div>
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <div className="text-sm text-muted-foreground mb-1">Phone</div>
+              <a href="tel:+254700000000" className="text-foreground font-semibold hover:text-[hsl(174,72%,46%)]">+254 700 000 000</a>
             </div>
           </div>
         </div>
