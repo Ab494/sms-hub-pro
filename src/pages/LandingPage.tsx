@@ -362,11 +362,11 @@ export default function LandingPage() {
           <div className="grid sm:grid-cols-2 gap-6 text-left">
             <div className="bg-card border border-border rounded-2xl p-6">
               <div className="text-sm text-muted-foreground mb-1">Email</div>
-              <a href="mailto:support@tumaprime.com" className="text-foreground font-semibold hover:text-[hsl(174,72%,46%)]">support@tumaprime.com</a>
+              <a href="mailto:sales@254convexcomltd.co.ke" className="text-foreground font-semibold hover:text-[hsl(174,72%,46%)] break-all">sales@254convexcomltd.co.ke</a>
             </div>
             <div className="bg-card border border-border rounded-2xl p-6">
               <div className="text-sm text-muted-foreground mb-1">Phone</div>
-              <a href="tel:+254700000000" className="text-foreground font-semibold hover:text-[hsl(174,72%,46%)]">+254 700 000 000</a>
+              <a href="tel:+254722745703" className="text-foreground font-semibold hover:text-[hsl(174,72%,46%)]">+254 722 745 703</a>
             </div>
           </div>
         </div>
