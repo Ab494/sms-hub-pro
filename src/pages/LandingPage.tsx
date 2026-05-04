@@ -78,9 +78,15 @@ export default function LandingPage() {
           </div>
 
           <nav className="hidden md:flex items-center gap-8">
-            {["Solutions", "Pricing", "Developer", "About", "Contact"].map((item) => (
-              <a key={item} href="#" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                {item}
+            {[
+              { label: "Solutions", href: "#solutions" },
+              { label: "Pricing", href: "#pricing" },
+              { label: "Developer", href: "#developer" },
+              { label: "About", href: "#about" },
+              { label: "Contact", href: "#contact" },
+            ].map((item) => (
+              <a key={item.label} href={item.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                {item.label}
               </a>
             ))}
           </nav>
